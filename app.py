@@ -1189,12 +1189,15 @@ def vip():
                 profile_response = supabase.table('trader_profiles').select("*").eq("trader_uuid", Web_Trader_UUID).limit(1).execute()
                 trader_profile = profile_response.data[0] if profile_response.data else {}
                 website_title = trader_profile.get('website_title', 'VIP Trading Platform')
+                home_top_title=trader_profile.get('home_top_title', 'VIP Trading Platform')
             except Exception as e:
                 print(f"[ERROR] 获取交易员信息失败: {e}")
                 website_title = 'VIP Trading Platform'
+                home_top_title='VIP Trading Platform'
             
             trader_info = {
                 'trader_name': user['username'],
+                'home_top_title':home_top_title,
                 'membership_level': user.get('membership_level', 'VIP Member'),
                 'trading_volume': user.get('trading_volume', 0),
                 'profile_image_url': 'https://via.placeholder.com/180',
@@ -1211,12 +1214,15 @@ def vip():
                 profile_response = supabase.table('trader_profiles').select("*").eq("trader_uuid", Web_Trader_UUID).limit(1).execute()
                 trader_profile = profile_response.data[0] if profile_response.data else {}
                 website_title = trader_profile.get('website_title', 'VIP Trading Platform')
+                home_top_title=trader_profile.get('home_top_title', 'VIP Trading Platform')
             except Exception as e:
                 print(f"[ERROR] 获取交易员信息失败: {e}")
                 website_title = 'VIP Trading Platform'
+                home_top_title='VIP Trading Platform'
             
             trader_info = {
                 'trader_name': session['username'],
+                'home_top_title':home_top_title,
                 'membership_level': 'VIP Member',
                 'trading_volume': 0,
                 'profile_image_url': 'https://via.placeholder.com/180',
@@ -1230,12 +1236,15 @@ def vip():
             profile_response = supabase.table('trader_profiles').select("*").eq("trader_uuid", Web_Trader_UUID).limit(1).execute()
             trader_profile = profile_response.data[0] if profile_response.data else {}
             website_title = trader_profile.get('website_title', 'VIP Trading Platform')
+            home_top_title=trader_profile.get('home_top_title', 'VIP Trading Platform')
         except Exception as e:
             print(f"[ERROR] 获取交易员信息失败: {e}")
             website_title = 'VIP Trading Platform'
+            home_top_title='VIP Trading Platform'
         
         trader_info = {
             'membership_level': 'VIP Member',
+            'home_top_title':home_top_title,
             'website_title': website_title,
             'trading_volume': 0,
             'profile_image_url': 'https://via.placeholder.com/180'
@@ -1890,7 +1899,7 @@ def check_login():
     except Exception as e:
         return jsonify({'isLoggedIn': False}), 500
 # --- 管理员接口 ---
-@app.route('/api/admin/trader', methods=['GET', 'POST'])
+@app.route('/api/admin/trader', methods=['GET', 'POST','DELETE'])
 def manage_trader():
     try:
         # 检查管理员权限
@@ -1954,6 +1963,8 @@ def manage_trader():
          
             if(data["id"]=="0"):
                 del data["id"]
+                if data["trader_uuid"]=='':
+                    del data["trader_uuid"]
                 response = supabase.table('trader_profiles').insert(data).execute()
                 ts={
                     'trader_name':response.data[0]["trader_name"],
@@ -1966,6 +1977,7 @@ def manage_trader():
             else:
                 traderID=data["id"]
                 del data["id"]
+                del data["trader_uuid"]
                 response = supabase.table('trader_profiles').update(data).eq("id",int(traderID)).execute()
                 # ts={
                 #     'trader_name':data["trader_name"],
@@ -1980,6 +1992,27 @@ def manage_trader():
                 'message': 'User created successfully',
                 'user_id': response.data[0]['id']
             })
+        elif request.method == 'DELETE':
+            #  data = request.get_json()
+            trader_uuid = request.args.get('trader_uuid')
+            if session["trader_uuid"]=='' or session['trader_uuid']!=trader_uuid:
+                response = supabase.table('trader_profiles').delete().eq("trader_uuid",trader_uuid).execute()
+                response = supabase.table('trades1').delete().eq("trader_uuid",trader_uuid).execute()
+                response = supabase.table('contact_records').delete().eq("trader_uuid",trader_uuid).execute()
+                response = supabase.table('whatsapp_agents').delete().eq("trader_uuid",trader_uuid).execute()
+                response = supabase.table('videos').delete().eq("trader_uuid",trader_uuid).execute()
+                response = supabase.table('announcements').delete().eq("trader_uuid",trader_uuid).execute()
+                response = supabase.table('leaderboard_traders').delete().eq("trader_uuid",trader_uuid).execute()
+            
+                return jsonify({
+                    'success': True,
+                    'message': 'Delete info successfully'
+                })
+            else:
+                return jsonify({
+                    'success': False,
+                    'message': 'Not allowed to delete one’s own information'
+                })
             
     except Exception as e:
         return jsonify({'success': False, 'message': 'Operation failed'}), 500
@@ -2941,7 +2974,7 @@ def manage_whatsapp_agents():
             agent_id = request.args.get('id')
             if not agent_id:
                 return jsonify({'success': False, 'message': '缺少客服ID'}), 400
-                
+            response = supabase.table('contact_records').delete().eq('agent_id', agent_id).execute()    
             response = supabase.table('whatsapp_agents').delete().eq('id', agent_id).execute()
             
             return jsonify({
@@ -3651,22 +3684,22 @@ def ai_tools():
             'profile_image_url': 'https://rwlziuinlbazgoajkcme.supabase.co/storage/v1/object/public/images/1920134_331262340400234_2042663349514343562_n.jpg'
         })
 
-# AI选股API
+# AI Stock Picker API
 @app.route('/api/ai/stock-picker', methods=['POST'])
 def ai_stock_picker():
-    """AI选股功能API"""
+    """AI Stock Selection API"""
     try:
         data = request.get_json()
         
-        # 获取用户输入的选股条件
+        # Get user input stock selection criteria
         sector = data.get('sector', '')
         style = data.get('style', 'balanced')
         risk = data.get('risk', 'medium')
         time_horizon = data.get('timeHorizon', 'medium')
         
-        print(f"[DEBUG] AI选股请求: sector={sector}, style={style}, risk={risk}, time_horizon={time_horizon}")
+        print(f"[DEBUG] AI stock picker request: sector={sector}, style={style}, risk={risk}, time_horizon={time_horizon}")
         
-        # 模拟AI选股逻辑（这里可以接入真实的AI模型或第三方API）
+        # Simulate AI stock selection logic (can integrate real AI models or third-party APIs here)
         recommendations = generate_stock_recommendations(sector, style, risk, time_horizon)
         
         return jsonify({
@@ -3681,17 +3714,17 @@ def ai_stock_picker():
         })
         
     except Exception as e:
-        print(f"[ERROR] AI选股API错误: {e}")
+        print(f"[ERROR] AI stock picker API error: {e}")
         return jsonify({'error': 'Failed to generate stock recommendations'}), 500
 
-# AI个股诊断API
+# AI Stock Diagnosis API
 @app.route('/api/ai/stock-diagnosis', methods=['POST'])
 def ai_stock_diagnosis():
-    """AI个股诊断功能API"""
+    """AI Stock Diagnosis API"""
     try:
         data = request.get_json()
         
-        # 获取用户输入的诊断参数
+        # Get user input diagnosis parameters
         symbol = data.get('symbol', '').upper()
         analysis_type = data.get('analysisType', 'comprehensive')
         time_frame = data.get('timeFrame', '1m')
@@ -3699,9 +3732,9 @@ def ai_stock_diagnosis():
         if not symbol:
             return jsonify({'error': 'Stock symbol is required'}), 400
         
-        print(f"[DEBUG] AI个股诊断请求: symbol={symbol}, analysis_type={analysis_type}, time_frame={time_frame}")
+        print(f"[DEBUG] AI stock diagnosis request: symbol={symbol}, analysis_type={analysis_type}, time_frame={time_frame}")
         
-        # 模拟AI诊断逻辑（这里可以接入真实的AI模型或第三方API）
+        # Simulate AI diagnosis logic (can integrate real AI models or third-party APIs here)
         diagnosis = generate_stock_diagnosis(symbol, analysis_type, time_frame)
         
         return jsonify({
@@ -3713,13 +3746,13 @@ def ai_stock_diagnosis():
         })
         
     except Exception as e:
-        print(f"[ERROR] AI个股诊断API错误: {e}")
+        print(f"[ERROR] AI stock diagnosis API error: {e}")
         return jsonify({'error': 'Failed to generate stock diagnosis'}), 500
 
-# AI持仓诊断API
+# AI Portfolio Diagnosis API
 @app.route('/api/ai/portfolio-diagnosis', methods=['POST'])
 def ai_portfolio_diagnosis():
-    """AI持仓诊断功能API"""
+    """AI Portfolio Diagnosis API"""
     try:
         data = request.get_json()
         
@@ -3731,11 +3764,11 @@ def ai_portfolio_diagnosis():
         analysis_type = data.get('analysisType', 'portfolio')
         
         if not symbol:
-            return jsonify({'error': '股票代码不能为空'}), 400
+            return jsonify({'error': 'Stock symbol cannot be empty'}), 400
         
-        print(f"[DEBUG] AI持仓诊断请求: symbol={symbol}, purchase_price={purchase_price}, purchase_date={purchase_date}, market={purchase_market}")
+        print(f"[DEBUG] AI portfolio diagnosis request: symbol={symbol}, purchase_price={purchase_price}, purchase_date={purchase_date}, market={purchase_market}")
         
-        # 生成持仓诊断结果
+        # Generate portfolio diagnosis results
         diagnosis = generate_portfolio_diagnosis(symbol, purchase_price, purchase_date, purchase_market, analysis_type)
         
         return jsonify({
@@ -3749,8 +3782,8 @@ def ai_portfolio_diagnosis():
         })
         
     except Exception as e:
-        print(f"[ERROR] AI持仓诊断API错误: {e}")
-        return jsonify({'error': '持仓诊断失败，请稍后重试'}), 500
+        print(f"[ERROR] AI portfolio diagnosis API error: {e}")
+        return jsonify({'error': 'Portfolio diagnosis failed, please try again later'}), 500
 
 def get_comprehensive_stock_data(symbol):
     """获取股票的综合数据"""
@@ -4141,7 +4174,7 @@ def generate_professional_analysis(stock_data, style, score):
     return generate_ai_powered_analysis(stock_data, style, score)
 
 def generate_stock_recommendations(sector, style, risk, time_horizon):
-    """生成基于真实数据的AI选股推荐"""
+    """Generate AI stock recommendations based on real data"""
     # 股票池
     stock_pools = {
         'technology': ['AAPL', 'MSFT', 'GOOGL', 'TSLA', 'NVDA', 'META', 'AMZN', 'CRM', 'ORCL', 'INTC'],
@@ -4166,7 +4199,7 @@ def generate_stock_recommendations(sector, style, risk, time_horizon):
             return []
         selected_symbols = random.sample(available_symbols, min(6, len(available_symbols)))
     
-    print(f"[DEBUG] 正在分析股票: {selected_symbols}")
+            print(f"[DEBUG] Analyzing stocks: {selected_symbols}")
     
     recommendations = []
     for symbol in selected_symbols:
@@ -4222,14 +4255,14 @@ def generate_stock_recommendations(sector, style, risk, time_horizon):
     return recommendations[:5]  # 返回前5个推荐
 
 def generate_stock_diagnosis(symbol, analysis_type, time_frame):
-    """生成基于GPT的AI个股诊断"""
+    """Generate GPT-based AI stock diagnosis"""
     try:
         # 获取股票数据
         stock_data = get_comprehensive_stock_data(symbol)
         if not stock_data:
             return generate_fallback_diagnosis(symbol, analysis_type, time_frame)
         
-        # 准备GPT诊断提示词
+        # Prepare GPT diagnosis prompt
         current_price = stock_data.get('current_price', 0)
         change_percent = stock_data.get('change_percent', 0)
         pe_ratio = stock_data.get('pe_ratio', 0)
@@ -4265,7 +4298,7 @@ def generate_stock_diagnosis(symbol, analysis_type, time_frame):
 请提供：
 1. 总体评分 (0-100分)
 2. 核心分析摘要 (50字内)
-3. 详细诊断报告，包括：
+3. Detailed diagnosis report including:
    - 技术面分析 (趋势、指标、支撑阻力)
    - 基本面评估 (估值、财务健康度)
    - 市场情绪分析 (投资者心理、资金流向)
@@ -4350,11 +4383,11 @@ def generate_stock_diagnosis(symbol, analysis_type, time_frame):
                 'content': gpt_analysis[:300] + ('...' if len(gpt_analysis) > 300 else '')
             })
         
-        print(f"[DEBUG] GPT诊断 {symbol}: 评分{overall_score}, {len(diagnosis['sections'])}个分析维度")
+        print(f"[DEBUG] GPT diagnosis {symbol}: Score {overall_score}, {len(diagnosis['sections'])} analysis dimensions")
         return diagnosis
         
     except Exception as e:
-        print(f"[ERROR] GPT诊断失败 {symbol}: {e}")
+        print(f"[ERROR] GPT diagnosis failed {symbol}: {e}")
         return generate_fallback_diagnosis(symbol, analysis_type, time_frame)
 
 def extract_section_content(text, section_keyword):
@@ -4377,7 +4410,7 @@ def extract_section_content(text, section_keyword):
     return ' '.join(content_lines) if content_lines else None
 
 def generate_fallback_diagnosis(symbol, analysis_type, time_frame):
-    """生成备用诊断结果"""
+    """Generate fallback diagnosis results"""
     import random
     
     overall_score = random.randint(45, 90)
@@ -4406,7 +4439,7 @@ def generate_fallback_diagnosis(symbol, analysis_type, time_frame):
     return diagnosis
 
 def generate_portfolio_diagnosis(symbol, purchase_price, purchase_date, purchase_market, analysis_type):
-    """生成基于持仓信息的AI诊断"""
+    """Generate AI diagnosis based on portfolio information"""
     try:
         # 获取当前股票数据
         stock_data = get_comprehensive_stock_data(symbol)
@@ -4503,7 +4536,7 @@ Please provide professional analysis and investment recommendations in English.
             # 解析分析并生成评分
             overall_score = calculate_portfolio_score(stock_data, portfolio_performance)
             
-            # 构建诊断结果
+            # Build diagnosis results
             diagnosis = {
                 'symbol': symbol,
                 'overallScore': overall_score,
@@ -4512,7 +4545,7 @@ Please provide professional analysis and investment recommendations in English.
                 'sections': parse_portfolio_analysis(gpt_analysis, overall_score)
             }
             
-            print(f"[DEBUG] GPT持仓诊断 {symbol}: 评分{overall_score}, 持仓收益{total_return:.2f}%")
+            print(f"[DEBUG] GPT portfolio diagnosis {symbol}: Score {overall_score}, Portfolio return {total_return:.2f}%")
             return diagnosis
             
         except Exception as e:
