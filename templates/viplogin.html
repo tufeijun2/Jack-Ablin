@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Professional Trader - Login</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #0f1419 0%, #1a2332 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #ffffff;
+        }
+
+        .login-container {
+            background: rgba(26, 35, 50, 0.95);
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3);
+            width: 100%;
+            max-width: 450px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 215, 0, 0.2);
+        }
+
+        .login-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .login-header .avatar {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            border: 3px solid #ffd700;
+            margin: 0 auto 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(255, 215, 0, 0.1);
+            font-size: 24px;
+            color: #ffd700;
+        }
+
+        .login-header h1 {
+            color: #ffd700;
+            font-size: 28px;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+
+        .login-header p {
+            color: #a0a0a0;
+            font-size: 14px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #ffffff;
+            font-weight: 500;
+            font-size: 14px;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid rgba(255, 215, 0, 0.3);
+            border-radius: 10px;
+            font-size: 14px;
+            transition: all 0.3s ease;
+            background: rgba(15, 20, 25, 0.8);
+            color: #ffffff;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: #ffd700;
+            background: rgba(15, 20, 25, 0.9);
+            box-shadow: 0 0 0 3px rgba(255, 215, 0, 0.1);
+        }
+
+        .form-group input::placeholder {
+            color: #666;
+        }
+
+        .remember-forgot {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+
+        .remember-me {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .remember-me input[type="checkbox"] {
+            width: auto;
+            margin: 0;
+            accent-color: #ffd700;
+        }
+
+        .remember-me label {
+            margin: 0;
+            font-size: 14px;
+            color: #a0a0a0;
+        }
+
+        .forgot-password {
+            color: #ffd700;
+            text-decoration: none;
+            font-size: 14px;
+            transition: color 0.3s ease;
+        }
+
+        .forgot-password:hover {
+            color: #ffed4e;
+        }
+
+        .login-btn {
+            width: 100%;
+            padding: 12px;
+            background: linear-gradient(135deg, #ffd700 0%, #ffed4e 100%);
+            color: #1a2332;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .login-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(255, 215, 0, 0.4);
+        }
+
+        .login-btn:active {
+            transform: translateY(0);
+        }
+
+        .divider {
+            text-align: center;
+            margin: 25px 0;
+            position: relative;
+        }
+
+        .divider::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: rgba(255, 215, 0, 0.3);
+        }
+
+        .divider span {
+            background: rgba(26, 35, 50, 0.95);
+            padding: 0 15px;
+            color: #ffd700;
+            font-size: 14px;
+        }
+
+        .social-login {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .social-btn {
+            flex: 1;
+            padding: 10px;
+            border: 2px solid rgba(255, 215, 0, 0.3);
+            border-radius: 8px;
+            background: rgba(15, 20, 25, 0.8);
+            color: #ffd700;
+            text-decoration: none;
+            text-align: center;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+
+        .social-btn:hover {
+            border-color: #ffd700;
+            background: rgba(255, 215, 0, 0.1);
+        }
+
+        .signup-link {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .signup-link a {
+            color: #ffd700;
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .signup-link a:hover {
+            text-decoration: underline;
+        }
+
+        .error-message {
+            color: #ff6b6b;
+            font-size: 14px;
+            margin-top: 5px;
+            display: none;
+        }
+
+        .stats-cards {
+            display: flex;
+            gap: 10px;
+            margin: 20px 0;
+        }
+
+        .stat-card {
+            flex: 1;
+            background: rgba(15, 20, 25, 0.8);
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+            border: 1px solid rgba(255, 215, 0, 0.2);
+        }
+
+        .stat-card h3 {
+            color: #ffd700;
+            font-size: 18px;
+            margin-bottom: 5px;
+        }
+
+        .stat-card p {
+            color: #a0a0a0;
+            font-size: 12px;
+        }
+
+        @media (max-width: 480px) {
+            .login-container {
+                margin: 20px;
+                padding: 30px 20px;
+            }
+            
+            .stats-cards {
+                flex-direction: column;
+            }
+        }
+        .top-nav {
+            background: rgba(26, 28, 46, 0.95);
+            padding: 0.75rem 0;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            border-bottom: 1px solid rgba(255, 215, 0, 0.1);
+        }
+
+        .nav-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 1rem;
+        }
+
+        .nav-left {
+            flex: 0 0 auto;
+        }
+
+        .nav-center {
+            flex: 1;
+            text-align: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.75rem;
+        }
+
+        .nav-right {
+            flex: 0 0 auto;
+        }
+    </style>
+</head>
+<body>
+   
+    <div class="login-container">
+        <div class="login-header">
+            <div class="avatar">?</div>
+            <h1>Professional Trader</h1>
+            <p>Stock Trading Expert | Technical Analysis Master</p>
+        </div>
+        
+        <!-- <div class="stats-cards"  style="display: none;">
+            <div class="stat-card">
+                <h3>5 Years</h3>
+                <p>Experience</p>
+            </div>
+            <div class="stat-card">
+                <h3>0</h3>
+                <p>Total Trades</p>
+            </div>
+            <div class="stat-card">
+                <h3>85%</h3>
+                <p>Win Rate</p>
+            </div>
+        </div> -->
+        
+        <form id="loginForm">
+            <div class="form-group">
+                <label for="username">Username</label>
+                <input type="text" id="username" name="username" placeholder="Enter your username" required>
+                <div class="error-message" id="username-error"></div>
+            </div>
+            
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input type="password" id="password" name="password" placeholder="Enter your password" required>
+                <div class="error-message" id="password-error"></div>
+            </div>
+            
+            <!-- <div class="remember-forgot"  style="display: none;">
+                <div class="remember-me">
+                    <input type="checkbox" id="remember" name="remember">
+                    <label for="remember">Remember me</label>
+                </div>
+                <a href="#" class="forgot-password">Forgot Password?</a>
+            </div> -->
+            
+            <button type="submit" class="login-btn">Login</button>
+        </form>
+        
+        <!-- <div class="divider">
+            <span>or</span>
+        </div>
+        
+        <div class="social-login"  style="display: none;">
+            <a href="#" class="social-btn">Email</a>
+            <a href="#" class="social-btn">Google</a>
+            <a href="#" class="social-btn">Facebook</a>
+        </div>
+        
+        <div class="signup-link"  style="display: none;">
+            <p>Don't have an account? <a href="#">Sign up now</a></p>
+        </div> -->
+    </div>
+
+    <script>
+        // 处理登录表单提交
+        document.getElementById('loginForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            
+            fetch('/api/login', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    username: username,
+                    password: password
+                }),
+                credentials: 'include'
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Login successful, refresh page to show new membership info
+                    window.location="/vip"
+                } else {
+                    // Login failed
+                    alert(data.message || 'Login failed. Please check your username and password.');
+                }
+            })
+            .catch(error => {
+                console.error('Login error:', error);
+                alert('An error occurred during login. Please try again later.');
+            });
+        });
+
+      
+    </script>
+</body>
+</html>

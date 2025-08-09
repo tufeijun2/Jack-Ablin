@@ -1,0 +1,1068 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ trader_info.website_title }} - AI Trading Tools</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.2/font/bootstrap-icons.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #1a1a2e;
+            --secondary-color: #16213e;
+            --accent-color: #4361ee;
+            --success-color: #2ecc71;
+            --danger-color: #e74c3c;
+            --warning-color: #f1c40f;
+            --text-color: #ffffff;
+            --border-color: #2a2a3a;
+            --gold-color: #ffd700;
+            --ai-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --ai-secondary: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        }
+        
+        body {
+            background-color: var(--primary-color);
+            color: var(--text-color);
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+
+        .navbar {
+            background-color: var(--secondary-color);
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+            padding: 0.5rem 0;
+            border-bottom: 1px solid var(--gold-color);
+        }
+
+        .navbar-brand {
+            font-weight: 600;
+            font-size: 1rem;
+            color: var(--gold-color);
+        }
+
+        .ai-header {
+            background: var(--ai-gradient);
+            padding: 3rem 0;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .ai-header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="circuit" x="0" y="0" width="20" height="20" patternUnits="userSpaceOnUse"><path d="M10,5 L15,10 L10,15 L5,10 Z" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="0.5"/></pattern></defs><rect width="100" height="100" fill="url(%23circuit)"/></svg>') repeat;
+            opacity: 0.1;
+        }
+
+        .ai-header h1 {
+            font-size: 3rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            text-shadow: 0 2px 10px rgba(0,0,0,0.3);
+            position: relative;
+            z-index: 1;
+        }
+
+        .ai-header p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+            margin-bottom: 0;
+            position: relative;
+            z-index: 1;
+        }
+
+        .ai-tools-container {
+            padding: 3rem 0;
+        }
+
+        .ai-tool-card {
+            background: var(--secondary-color);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .ai-tool-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            border-color: var(--gold-color);
+        }
+
+        .ai-tool-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: var(--ai-gradient);
+        }
+
+        .tool-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .tool-icon {
+            width: 60px;
+            height: 60px;
+            background: var(--ai-gradient);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            color: white;
+        }
+
+        .tool-title {
+            flex: 1;
+        }
+
+        .tool-title h3 {
+            color: var(--gold-color);
+            margin: 0 0 0.5rem 0;
+            font-size: 1.5rem;
+        }
+
+        .tool-title p {
+            color: #a0a0a0;
+            margin: 0;
+            font-size: 0.95rem;
+        }
+
+        .tool-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            margin-top: 1.5rem;
+        }
+
+        .input-section {
+            background: rgba(255,215,0,0.05);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 1.5rem;
+        }
+
+        .input-section h4 {
+            color: var(--gold-color);
+            margin-bottom: 1rem;
+            font-size: 1.1rem;
+        }
+
+        .form-control, .form-select {
+            background-color: var(--primary-color);
+            border: 1px solid var(--border-color);
+            color: var(--text-color);
+            border-radius: 8px;
+            padding: 0.75rem;
+            margin-bottom: 1rem;
+        }
+
+        .form-control:focus, .form-select:focus {
+            background-color: var(--primary-color);
+            border-color: var(--gold-color);
+            color: var(--text-color);
+            box-shadow: 0 0 0 0.2rem rgba(255, 215, 0, 0.25);
+        }
+
+        .btn-ai {
+            background: var(--ai-gradient);
+            border: none;
+            color: white;
+            padding: 0.75rem 2rem;
+            border-radius: 8px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-ai:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+            color: white;
+        }
+
+        .btn-ai:disabled {
+            opacity: 0.6;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .results-section {
+            background: rgba(46, 204, 113, 0.05);
+            border: 1px solid var(--success-color);
+            border-radius: 12px;
+            padding: 1.5rem;
+            min-height: 200px;
+        }
+
+        .results-section h4 {
+            color: var(--success-color);
+            margin-bottom: 1rem;
+            font-size: 1.1rem;
+        }
+
+        .loading-spinner {
+            display: none;
+            text-align: center;
+            padding: 2rem;
+        }
+
+        .spinner-border {
+            color: var(--gold-color);
+        }
+
+        .stock-recommendation {
+            background: rgba(255,215,0,0.1);
+            border: 1px solid var(--gold-color);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .stock-recommendation:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(255, 215, 0, 0.2);
+            border-color: var(--success-color);
+        }
+
+        .stock-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 0.75rem;
+        }
+
+        .stock-symbol {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: var(--gold-color);
+        }
+
+        .stock-name {
+            font-size: 0.9rem;
+            color: #a0a0a0;
+            margin-bottom: 1rem;
+            font-weight: 500;
+        }
+
+        .stock-price-info {
+            text-align: right;
+        }
+
+        .current-price {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--text-color);
+            display: block;
+        }
+
+        .price-change {
+            font-size: 0.85rem;
+            font-weight: 600;
+            padding: 0.2rem 0.5rem;
+            border-radius: 4px;
+            margin-top: 0.25rem;
+            display: inline-block;
+        }
+
+        .price-change.positive {
+            background: rgba(46, 204, 113, 0.2);
+            color: var(--success-color);
+        }
+
+        .price-change.negative {
+            background: rgba(231, 76, 60, 0.2);
+            color: var(--danger-color);
+        }
+
+        .stock-score {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .score-badge {
+            background: var(--success-color);
+            color: white;
+            padding: 0.3rem 0.75rem;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        .stock-metrics {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            margin-bottom: 1rem;
+            padding: 0.75rem;
+            background: rgba(0,0,0,0.2);
+            border-radius: 8px;
+        }
+
+        .metric-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            min-width: 80px;
+        }
+
+        .metric-label {
+            font-size: 0.75rem;
+            color: #888;
+            margin-bottom: 0.25rem;
+        }
+
+        .metric-value {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--text-color);
+        }
+
+        .metric-value.high-volume {
+            color: var(--warning-color);
+        }
+
+        .stock-reason {
+            color: #a0a0a0;
+            font-size: 0.9rem;
+            line-height: 1.5;
+            margin-bottom: 1rem;
+            padding: 1rem;
+            background: rgba(0,0,0,0.1);
+            border-radius: 8px;
+            border-left: 3px solid var(--accent-color);
+        }
+
+        .stock-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            font-size: 0.85rem;
+        }
+
+        .sector-tag, .return-estimate, .risk-level {
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            background: rgba(0,0,0,0.3);
+        }
+
+        .sector-tag {
+            color: var(--accent-color);
+        }
+
+        .return-estimate.positive {
+            color: var(--success-color);
+        }
+
+        .return-estimate.negative {
+            color: var(--danger-color);
+        }
+
+        .risk-level {
+            color: var(--warning-color);
+        }
+
+        .diagnosis-section {
+            background: rgba(67, 97, 238, 0.1);
+            border: 1px solid var(--accent-color);
+            border-radius: 8px;
+            padding: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .diagnosis-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .diagnosis-title {
+            color: var(--accent-color);
+            font-weight: 600;
+            margin: 0;
+        }
+
+        .diagnosis-content {
+            color: #a0a0a0;
+            line-height: 1.5;
+        }
+
+        .portfolio-metrics {
+            margin: 1rem 0;
+        }
+
+        .metric-card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 1rem;
+            text-align: center;
+            margin-bottom: 0.5rem;
+        }
+
+        .metric-label {
+            font-size: 0.9rem;
+            color: #a0a0a0;
+            margin-bottom: 0.5rem;
+        }
+
+        .metric-value {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: var(--text-color);
+        }
+
+        .text-success {
+            color: #28a745 !important;
+        }
+
+        .text-danger {
+            color: #dc3545 !important;
+        }
+
+        .back-btn {
+            background: var(--secondary-color);
+            border: 1px solid var(--border-color);
+            color: var(--text-color);
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .back-btn:hover {
+            border-color: var(--gold-color);
+            color: var(--gold-color);
+            text-decoration: none;
+        }
+
+        @media (max-width: 768px) {
+            .ai-header h1 {
+                font-size: 2rem;
+            }
+            
+            .tool-content {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+            }
+            
+            .tool-header {
+                flex-direction: column;
+                text-align: center;
+            }
+        }
+
+        /* AI动画效果 */
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+        
+        .ai-thinking {
+            animation: pulse 1.5s infinite;
+        }
+
+        /* 结果展示动画 */
+        .result-item {
+            opacity: 0;
+            transform: translateY(20px);
+            animation: slideIn 0.5s ease forwards;
+        }
+
+        @keyframes slideIn {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark mb-3">
+        <div class="container">
+            <a class="navbar-brand" href="/">
+                <i class="bi bi-graph-up me-2"></i>
+                {{ trader_info.home_top_title }}
+            </a>
+            <div class="navbar-nav ms-auto">
+                <a href="/" class="back-btn">
+                    <i class="bi bi-arrow-left"></i>
+                    Back to Home
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- AI Header -->
+    <div class="ai-header">
+        <div class="container">
+            <h1><i class="bi bi-robot"></i> AI Trading Tools</h1>
+            <p>Advanced AI-powered stock analysis and selection tools</p>
+        </div>
+    </div>
+
+    <div class="container ai-tools-container">
+        <!-- AI Stock Picker -->
+        <div class="ai-tool-card">
+            <div class="tool-header">
+                <div class="tool-icon">
+                    <i class="bi bi-stars"></i>
+                </div>
+                <div class="tool-title">
+                    <h3>AI Smart Stock Picker</h3>
+                    <p>Intelligent stock selection based on market data, technical analysis, and AI algorithms</p>
+                </div>
+            </div>
+            
+            <div class="tool-content">
+                <div class="input-section">
+                    <h4><i class="bi bi-sliders"></i> Selection Criteria</h4>
+                    
+                    <label class="form-label">Market Sector</label>
+                    <select class="form-select" id="sectorSelect">
+                        <option value="">All Sectors</option>
+                        <option value="technology">Technology</option>
+                        <option value="healthcare">Healthcare</option>
+                        <option value="finance">Finance</option>
+                        <option value="energy">Energy</option>
+                        <option value="consumer">Consumer Goods</option>
+                        <option value="industrial">Industrial</option>
+                        <option value="utilities">Utilities</option>
+                        <option value="materials">Materials</option>
+                    </select>
+                    
+                    <label class="form-label">Investment Style</label>
+                    <select class="form-select" id="styleSelect">
+                        <option value="growth">Growth</option>
+                        <option value="value">Value</option>
+                        <option value="momentum">Momentum</option>
+                        <option value="dividend">Dividend</option>
+                        <option value="balanced">Balanced</option>
+                    </select>
+                    
+                    <label class="form-label">Risk Level</label>
+                    <select class="form-select" id="riskSelect">
+                        <option value="low">Conservative</option>
+                        <option value="medium">Moderate</option>
+                        <option value="high">Aggressive</option>
+                    </select>
+                    
+                    <label class="form-label">Time Horizon</label>
+                    <select class="form-select" id="timeSelect">
+                        <option value="short">Short-term (1-3 months)</option>
+                        <option value="medium">Medium-term (3-12 months)</option>
+                        <option value="long">Long-term (1+ years)</option>
+                    </select>
+                    
+                    <button class="btn btn-ai" onclick="runStockPicker()" id="pickBtn">
+                        <i class="bi bi-magic"></i>
+                        Generate AI Recommendations
+                    </button>
+                    <button class="btn btn-outline-secondary ms-2" onclick="testAPI()">
+                        <i class="bi bi-gear"></i>
+                        Test API
+                    </button>
+                </div>
+                
+                <div class="results-section">
+                    <h4><i class="bi bi-trophy"></i> AI Recommendations</h4>
+                    <div id="stockPickerResults">
+                        <div class="text-center text-muted" style="padding: 3rem 0;">
+                            <i class="bi bi-robot" style="font-size: 3rem; opacity: 0.3;"></i>
+                            <p style="margin-top: 1rem;">Configure your criteria and click "Generate AI Recommendations" to get started</p>
+                        </div>
+                    </div>
+                    <div class="loading-spinner" id="pickerLoading">
+                        <div class="spinner-border" role="status">
+                            <span class="visually-hidden">Analyzing...</span>
+                        </div>
+                        <p style="margin-top: 1rem;">AI is analyzing market data...</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- AI Stock Diagnosis -->
+        <div class="ai-tool-card">
+            <div class="tool-header">
+                <div class="tool-icon">
+                    <i class="bi bi-search"></i>
+                </div>
+                <div class="tool-title">
+                    <h3>AI Stock Diagnosis</h3>
+                    <p>Analyze your portfolio performance and get professional investment advice based on your holdings</p>
+                </div>
+            </div>
+            
+            <div class="tool-content">
+                <div class="input-section">
+                    <h4><i class="bi bi-input-cursor"></i> Portfolio Stock Analysis</h4>
+                    
+                    <label class="form-label">Stock Symbol</label>
+                    <input type="text" class="form-control" id="stockSymbol" placeholder="Enter stock symbol (e.g., AAPL, TSLA)" style="text-transform: uppercase;">
+                    
+                    <label class="form-label">Purchase Price</label>
+                    <input type="number" class="form-control" id="purchasePrice" placeholder="Enter purchase price (e.g., 150.50)" step="0.01" min="0">
+                    
+                    <label class="form-label">Purchase Date</label>
+                    <input type="date" class="form-control" id="purchaseDate">
+                    
+                    <label class="form-label">Purchase Market</label>
+                    <select class="form-select" id="purchaseMarket">
+                        <option value="NASDAQ">NASDAQ</option>
+                        <option value="NYSE">NYSE (New York Stock Exchange)</option>
+                        <option value="AMEX">AMEX (American Stock Exchange)</option>
+                        <option value="OTC">OTC (Over-the-Counter)</option>
+                    </select>
+                    
+                    <label class="form-label">Analysis Type</label>
+                    <select class="form-select" id="analysisType">
+                        <option value="portfolio">Portfolio Analysis (Recommended)</option>
+                        <option value="comprehensive">Comprehensive Analysis</option>
+                        <option value="technical">Technical Analysis</option>
+                        <option value="fundamental">Fundamental Analysis</option>
+                        <option value="sentiment">Market Sentiment</option>
+                        <option value="risk">Risk Assessment</option>
+                    </select>
+                    
+                    <button class="btn btn-ai" onclick="runPortfolioDiagnosis()" id="diagnoseBtn">
+                        <i class="bi bi-activity"></i>
+                        Run AI Diagnosis
+                    </button>
+                </div>
+                
+                <div class="results-section">
+                    <h4><i class="bi bi-clipboard-data"></i> Diagnosis Report</h4>
+                    <div id="stockDiagnosisResults">
+                        <div class="text-center text-muted" style="padding: 3rem 0;">
+                            <i class="bi bi-search" style="font-size: 3rem; opacity: 0.3;"></i>
+                            <p style="margin-top: 1rem;">Enter a stock symbol and click "Run AI Diagnosis" to analyze</p>
+                        </div>
+                    </div>
+                    <div class="loading-spinner" id="diagnosisLoading">
+                        <div class="spinner-border" role="status">
+                            <span class="visually-hidden">Diagnosing...</span>
+                        </div>
+                        <p style="margin-top: 1rem;">AI is performing deep analysis...</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // AI Stock Picker Function
+        async function runStockPicker() {
+            const btn = document.getElementById('pickBtn');
+            const results = document.getElementById('stockPickerResults');
+            const loading = document.getElementById('pickerLoading');
+            
+            // Show loading
+            btn.disabled = true;
+            results.style.display = 'none';
+            loading.style.display = 'block';
+            
+            const criteria = {
+                sector: document.getElementById('sectorSelect').value,
+                style: document.getElementById('styleSelect').value,
+                risk: document.getElementById('riskSelect').value,
+                timeHorizon: document.getElementById('timeSelect').value
+            };
+            
+            try {
+                const response = await fetch('/api/ai/stock-picker', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(criteria)
+                });
+                
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    console.error('API Error Response:', errorText);
+                    throw new Error(`API请求失败 (${response.status}): ${errorText}`);
+                }
+                
+                const data = await response.json();
+                console.log('API响应数据:', data);
+                
+                if (!data.success) {
+                    throw new Error(data.error || '服务器返回失败状态');
+                }
+                
+                displayStockRecommendations(data.recommendations);
+                
+            } catch (error) {
+                console.error('Error:', error);
+                results.innerHTML = `
+                    <div class="alert alert-danger">
+                        <i class="bi bi-exclamation-triangle"></i>
+                        生成建议时出错：${error.message}
+                    </div>
+                `;
+            } finally {
+                // Hide loading
+                loading.style.display = 'none';
+                results.style.display = 'block';
+                btn.disabled = false;
+            }
+        }
+        
+        // Display Stock Recommendations
+        function displayStockRecommendations(recommendations) {
+            const results = document.getElementById('stockPickerResults');
+            
+            if (!recommendations || recommendations.length === 0) {
+                results.innerHTML = `
+                    <div class="text-center text-muted">
+                        <i class="bi bi-info-circle" style="font-size: 2rem;"></i>
+                        <p style="margin-top: 1rem;">No recommendations found for the selected criteria</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            let html = '';
+            recommendations.forEach((stock, index) => {
+                const currentPrice = stock.current_price || 0;
+                const changePercent = stock.change_percent || 0;
+                const marketCap = stock.market_cap || 0;
+                const peRatio = stock.pe_ratio || 0;
+                const volumeRatio = stock.volume_ratio || 1;
+                
+                // 格式化市值
+                const formatMarketCap = (cap) => {
+                    if (cap > 1e12) return `$${(cap / 1e12).toFixed(1)}T`;
+                    if (cap > 1e9) return `$${(cap / 1e9).toFixed(1)}B`;
+                    if (cap > 1e6) return `$${(cap / 1e6).toFixed(1)}M`;
+                    return `$${cap.toFixed(0)}`;
+                };
+                
+                html += `
+                    <div class="stock-recommendation result-item" style="animation-delay: ${index * 0.1}s">
+                        <div class="stock-header">
+                            <div class="stock-symbol">${stock.symbol}</div>
+                            <div class="stock-price-info">
+                                <span class="current-price">$${currentPrice.toFixed(2)}</span>
+                                <span class="price-change ${changePercent >= 0 ? 'positive' : 'negative'}">
+                                    ${changePercent >= 0 ? '+' : ''}${changePercent.toFixed(2)}%
+                                </span>
+                            </div>
+                        </div>
+                        
+                        <div class="stock-name">${stock.name}</div>
+                        
+                        <div class="stock-score">
+                            <span class="score-badge">AI Score: ${stock.score}/100</span>
+                            <span class="badge bg-${getScoreColor(stock.score)}">${getScoreLabel(stock.score)}</span>
+                        </div>
+                        
+                        <div class="stock-metrics">
+                            <div class="metric-item">
+                                <span class="metric-label">Market Cap:</span>
+                                <span class="metric-value">${formatMarketCap(marketCap)}</span>
+                            </div>
+                            ${peRatio > 0 ? `
+                            <div class="metric-item">
+                                <span class="metric-label">P/E Ratio:</span>
+                                <span class="metric-value">${peRatio.toFixed(1)}</span>
+                            </div>
+                            ` : ''}
+                            <div class="metric-item">
+                                <span class="metric-label">Volume:</span>
+                                <span class="metric-value ${volumeRatio > 1.5 ? 'high-volume' : ''}">${volumeRatio.toFixed(1)}x</span>
+                            </div>
+                        </div>
+                        
+                        <div class="stock-reason">${stock.reason}</div>
+                        
+                        <div class="stock-footer">
+                            <span class="sector-tag">
+                                <i class="bi bi-tag"></i> ${stock.sector}
+                            </span>
+                            <span class="return-estimate ${parseFloat(stock.expectedReturn) >= 0 ? 'positive' : 'negative'}">
+                                <i class="bi bi-graph-up"></i> ${stock.expectedReturn}%
+                            </span>
+                            <span class="risk-level">
+                                <i class="bi bi-shield"></i> ${stock.riskLevel}
+                            </span>
+                        </div>
+                    </div>
+                `;
+            });
+            
+            results.innerHTML = html;
+        }
+        
+        // Portfolio AI Stock Diagnosis Function
+        async function runPortfolioDiagnosis() {
+            const btn = document.getElementById('diagnoseBtn');
+            const results = document.getElementById('stockDiagnosisResults');
+            const loading = document.getElementById('diagnosisLoading');
+            
+            // Validate required fields
+            const symbol = document.getElementById('stockSymbol').value.trim().toUpperCase();
+            const purchasePrice = document.getElementById('purchasePrice').value;
+            const purchaseDate = document.getElementById('purchaseDate').value;
+            
+            if (!symbol) {
+                alert('Please enter a stock symbol');
+                return;
+            }
+            
+            if (!purchasePrice || !purchaseDate) {
+                alert('Please fill in purchase price and date for more accurate portfolio analysis');
+            }
+            
+            // Show loading
+            btn.disabled = true;
+            results.style.display = 'none';
+            loading.style.display = 'block';
+            
+            const portfolioData = {
+                symbol: symbol,
+                purchasePrice: purchasePrice ? parseFloat(purchasePrice) : null,
+                purchaseDate: purchaseDate || null,
+                purchaseMarket: document.getElementById('purchaseMarket').value,
+                analysisType: document.getElementById('analysisType').value
+            };
+            
+            try {
+                const response = await fetch('/api/ai/portfolio-diagnosis', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(portfolioData)
+                });
+                
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    console.error('API Error Response:', errorText);
+                    throw new Error(`API请求失败 (${response.status}): ${errorText}`);
+                }
+                
+                const data = await response.json();
+                console.log('持仓诊断数据:', data);
+                
+                if (!data.success) {
+                    throw new Error(data.error || '服务器返回失败状态');
+                }
+                
+                displayPortfolioDiagnosis(data.diagnosis);
+                
+            } catch (error) {
+                console.error('Error:', error);
+                results.innerHTML = `
+                    <div class="alert alert-danger">
+                        <i class="bi bi-exclamation-triangle"></i>
+                        Portfolio diagnosis error: ${error.message}
+                    </div>
+                `;
+            } finally {
+                // Hide loading
+                loading.style.display = 'none';
+                results.style.display = 'block';
+                btn.disabled = false;
+            }
+        }
+        
+        // Legacy function for backward compatibility
+        async function runStockDiagnosis() {
+            return runPortfolioDiagnosis();
+        }
+        
+        // Display Portfolio Diagnosis
+        function displayPortfolioDiagnosis(diagnosis) {
+            const results = document.getElementById('stockDiagnosisResults');
+            
+            if (!diagnosis) {
+                results.innerHTML = `
+                    <div class="text-center text-muted">
+                        <i class="bi bi-info-circle" style="font-size: 2rem;"></i>
+                        <p style="margin-top: 1rem;">Diagnosis data not available</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            let html = '';
+            
+            // 持仓表现概览
+            if (diagnosis.portfolioPerformance) {
+                const perf = diagnosis.portfolioPerformance;
+                const gainLossClass = perf.totalReturn >= 0 ? 'text-success' : 'text-danger';
+                const gainLossIcon = perf.totalReturn >= 0 ? 'bi-arrow-up' : 'bi-arrow-down';
+                
+                html += `
+                    <div class="diagnosis-section result-item">
+                        <div class="diagnosis-header">
+                            <h5 class="diagnosis-title">
+                                <i class="bi bi-briefcase"></i> ${diagnosis.symbol} - Portfolio Performance
+                            </h5>
+                            <span class="badge bg-${getScoreColor(diagnosis.overallScore)}">${diagnosis.overallScore}/100</span>
+                        </div>
+                        <div class="portfolio-metrics">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="metric-card">
+                                        <div class="metric-label">Purchase Price</div>
+                                        <div class="metric-value">$${perf.purchasePrice.toFixed(2)}</div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="metric-card">
+                                        <div class="metric-label">Current Price</div>
+                                        <div class="metric-value">$${perf.currentPrice.toFixed(2)}</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row mt-2">
+                                <div class="col-md-6">
+                                    <div class="metric-card">
+                                        <div class="metric-label">Total Return</div>
+                                        <div class="metric-value ${gainLossClass}">
+                                            <i class="bi ${gainLossIcon}"></i>
+                                            ${perf.totalReturn >= 0 ? '+' : ''}${perf.totalReturn.toFixed(2)}%
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="metric-card">
+                                        <div class="metric-label">Holding Days</div>
+                                        <div class="metric-value">${perf.holdingDays} days</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="diagnosis-content mt-3">${diagnosis.summary}</div>
+                    </div>
+                `;
+            } else {
+                html += `
+                    <div class="diagnosis-section result-item">
+                        <div class="diagnosis-header">
+                            <h5 class="diagnosis-title">${diagnosis.symbol} - Stock Analysis</h5>
+                            <span class="badge bg-${getScoreColor(diagnosis.overallScore)}">${diagnosis.overallScore}/100</span>
+                        </div>
+                        <div class="diagnosis-content">${diagnosis.summary}</div>
+                    </div>
+                `;
+            }
+            
+            // 分析部分
+            if (diagnosis.sections) {
+                diagnosis.sections.forEach((section, index) => {
+                    html += `
+                        <div class="diagnosis-section result-item" style="animation-delay: ${(index + 1) * 0.1}s">
+                            <div class="diagnosis-header">
+                                <h6 class="diagnosis-title">${section.title}</h6>
+                                <span class="badge bg-${getScoreColor(section.score)}">${section.score}/100</span>
+                            </div>
+                            <div class="diagnosis-content">${section.content}</div>
+                        </div>
+                    `;
+                });
+            }
+            
+            results.innerHTML = html;
+        }
+        
+        // Legacy function for backward compatibility
+        function displayStockDiagnosis(diagnosis) {
+            return displayPortfolioDiagnosis(diagnosis);
+        }
+        
+        // Helper Functions
+        function getScoreColor(score) {
+            if (score >= 80) return 'success';
+            if (score >= 60) return 'warning';
+            return 'danger';
+        }
+        
+        function getScoreLabel(score) {
+            if (score >= 80) return 'Strong Buy';
+            if (score >= 60) return 'Buy';
+            if (score >= 40) return 'Hold';
+            return 'Sell';
+        }
+        
+        // Auto-uppercase stock symbol input
+        document.getElementById('stockSymbol').addEventListener('input', function(e) {
+            e.target.value = e.target.value.toUpperCase();
+        });
+        
+        // Enter key support for stock symbol input
+        document.getElementById('stockSymbol').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                runStockDiagnosis();
+            }
+        });
+        
+        // Test API function
+        async function testAPI() {
+            console.log('Testing AI Stock Picker API...');
+            try {
+                const response = await fetch('/api/ai/stock-picker', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        sector: 'technology',
+                        style: 'growth',
+                        risk: 'medium',
+                        timeHorizon: 'medium'
+                    })
+                });
+                
+                console.log('Response status:', response.status);
+                const data = await response.json();
+                console.log('Full API response:', data);
+                
+                if (data.recommendations && data.recommendations.length > 0) {
+                    alert(`API测试成功！获得 ${data.recommendations.length} 个推荐`);
+                } else {
+                    alert('API响应成功但没有推荐结果');
+                }
+            } catch (error) {
+                console.error('API测试失败:', error);
+                alert(`API测试失败: ${error.message}`);
+            }
+        }
+    </script>
+</body>
+</html>
