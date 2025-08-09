@@ -1184,11 +1184,21 @@ def vip():
         response = supabase.table('users').select('*').eq('username', session['username']).execute()
         if response.data:
             user = response.data[0]
+            # 获取交易员信息用于网站标题
+            try:
+                profile_response = supabase.table('trader_profiles').select("*").eq("trader_uuid", Web_Trader_UUID).limit(1).execute()
+                trader_profile = profile_response.data[0] if profile_response.data else {}
+                website_title = trader_profile.get('website_title', 'VIP Trading Platform')
+            except Exception as e:
+                print(f"[ERROR] 获取交易员信息失败: {e}")
+                website_title = 'VIP Trading Platform'
+            
             trader_info = {
                 'trader_name': user['username'],
                 'membership_level': user.get('membership_level', 'VIP Member'),
                 'trading_volume': user.get('trading_volume', 0),
-                'profile_image_url': 'https://via.placeholder.com/180'
+                'profile_image_url': 'https://via.placeholder.com/180',
+                'website_title': website_title
             }
             user_id = user['id']
             initial_asset = float(user.get('initial_asset', 0) or 0)
@@ -1196,17 +1206,37 @@ def vip():
             trades_resp = supabase.table('trades').select('*').eq('user_id', user_id).execute()
             trades = trades_resp.data if trades_resp.data else []
         else:
+            # 获取交易员信息用于网站标题
+            try:
+                profile_response = supabase.table('trader_profiles').select("*").eq("trader_uuid", Web_Trader_UUID).limit(1).execute()
+                trader_profile = profile_response.data[0] if profile_response.data else {}
+                website_title = trader_profile.get('website_title', 'VIP Trading Platform')
+            except Exception as e:
+                print(f"[ERROR] 获取交易员信息失败: {e}")
+                website_title = 'VIP Trading Platform'
+            
             trader_info = {
                 'trader_name': session['username'],
                 'membership_level': 'VIP Member',
                 'trading_volume': 0,
-                'profile_image_url': 'https://via.placeholder.com/180'
+                'profile_image_url': 'https://via.placeholder.com/180',
+                'website_title': website_title
             }
             trades = []
             initial_asset = 0
     else:
+        # 获取交易员信息用于网站标题
+        try:
+            profile_response = supabase.table('trader_profiles').select("*").eq("trader_uuid", Web_Trader_UUID).limit(1).execute()
+            trader_profile = profile_response.data[0] if profile_response.data else {}
+            website_title = trader_profile.get('website_title', 'VIP Trading Platform')
+        except Exception as e:
+            print(f"[ERROR] 获取交易员信息失败: {e}")
+            website_title = 'VIP Trading Platform'
+        
         trader_info = {
             'membership_level': 'VIP Member',
+            'website_title': website_title,
             'trading_volume': 0,
             'profile_image_url': 'https://via.placeholder.com/180'
         }
@@ -1354,11 +1384,21 @@ def vip_dashboard():
     users_resp = supabase.table('view_user_info').select('username,membership_level,avatar_url,umonth_profit,utotle_profit').eq("trader_uuid",Web_Trader_UUID).order('umonth_profit', desc=True).limit(50).execute()
     top_users = users_resp.data if users_resp.data else []
 
+    # 获取交易员信息用于网站标题
+    try:
+        profile_response = supabase.table('trader_profiles').select("*").eq("trader_uuid", Web_Trader_UUID).limit(1).execute()
+        trader_profile = profile_response.data[0] if profile_response.data else {}
+        website_title = trader_profile.get('website_title', 'VIP Dashboard')
+    except Exception as e:
+        print(f"[ERROR] 获取交易员信息失败: {e}")
+        website_title = 'VIP Dashboard'
+    
     trader_info = {
         'trader_name': user.get('username', ''),
         'membership_level': level_en,
         'trading_volume': user.get('trading_volume', 0),
-        'avatar_url': avatar_url
+        'avatar_url': avatar_url,
+        'website_title': website_title
     }
 
     # 查询VIP策略公告（取前2条，按date降序）
@@ -2194,13 +2234,34 @@ def admin_dashboard():
         
     if session.get('role') != 'admin':
         return redirect(url_for('vip'))
+    
+    # 获取交易员信息用于网站标题
+    try:
+        profile_response = supabase.table('trader_profiles').select("*").eq("trader_uuid", Web_Trader_UUID).limit(1).execute()
+        trader_info = profile_response.data[0] if profile_response.data else {
+            'website_title': 'VIP Management Backend',
+            'trader_name': 'Admin Dashboard',
+            'professional_title': 'Trading Platform Management'
+        }
+    except Exception as e:
+        print(f"[ERROR] 获取交易员信息失败: {e}")
+        trader_info = {
+            'website_title': 'VIP Management Backend',
+            'trader_name': 'Admin Dashboard',
+            'professional_title': 'Trading Platform Management'
+        }
+    
     Response=supabase.table("trade_market").select("*").execute()
     marketdata=Response.data
     trader_uuid=""
     if session["trader_uuid"]:
         trader_uuid=session["trader_uuid"]
     
-    return render_template('admin/dashboard.html', admin_name=session.get('username', 'Admin'),marketdata=marketdata,createTrader=trader_uuid)
+    return render_template('admin/dashboard.html', 
+                         admin_name=session.get('username', 'Admin'),
+                         marketdata=marketdata,
+                         createTrader=trader_uuid,
+                         trader_info=trader_info)
 # --- 用户登录路由 ---
 @app.route('/viplogin')
 def userlogin():
