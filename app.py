@@ -37,10 +37,10 @@ openai.api_key = os.getenv('OPENAI_API_KEY')
 # Supabase配置（改为环境变量读取）
 url = os.getenv('SUPABASE_URL')
 key = os.getenv('SUPABASE_KEY')
-Web_Trader_UUID=os.getenv('Web_Trader_UUID')
+Web_Trader_UUID = os.getenv('Web_Trader_UUID', '2e431a66-3423-433b-80a9-c3a4c72b7ffa')  # 提供默认值
 assert url, "SUPABASE_URL 环境变量未设置"
 assert key, "SUPABASE_KEY 环境变量未设置"
-assert Web_Trader_UUID, "Web_Trader_UUID 环境变量未设置"
+# 移除Web_Trader_UUID的断言，使用默认值
 supabase = create_client(url, key)
 
 # 股票图片映射
@@ -511,6 +511,9 @@ def index():
         return render_template('index.html', 
                             trades=[],
                             trader_info={
+                                'monthly_profit': 0,
+                                'active_trades': 0,
+                                'total_profit': 0,
                                 'strategy_info': {
                                     'formatted_time': default_formatted_time,
                                     'market_analysis': 'Market data temporarily unavailable',
@@ -2020,7 +2023,7 @@ def manage_trader():
             else:
                 return jsonify({
                     'success': False,
-                    'message': 'Not allowed to delete one’s own information'
+                    'message': 'Not allowed to delete one's own information'
                 })
             
     except Exception as e:
