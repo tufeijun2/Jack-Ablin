@@ -124,7 +124,7 @@ def get_India_price():
         for item in sdata:
             try:
                 global India_price_List
-                India_price_List[item["co"]]=item["a"]
+                India_price_List[item["co"].split('.')[0]]=item["a"]
                
             except Exception as e:
                 ...
@@ -158,7 +158,7 @@ def get_real_time_price(market,symbol, asset_type=None):
     else: #获取印度股票价格
         try:
          
-            price_value=India_price_List[symbol]
+            price_value=India_price_List[symbol.split(".")[0]]
             return price_value
         except Exception as e:
                 return None
@@ -913,7 +913,7 @@ def add_test_best_trade():
 def get_announcement():
     try:
         # 获取最新的公告
-        response = supabase.table('announcements').select("*").eq("trader_uuid", Web_Trader_UUID).eq("active", True).order('created_at', desc=True).limit(1).execute()
+        response = supabase.table('announcements').select("*").eq("trader_uuid", Web_Trader_UUID).eq("active", True).eq("popup_enabled", True).order('created_at', desc=True).limit(1).execute()
         
         if response.data and len(response.data) > 0:
             announcement = response.data[0]
@@ -933,6 +933,7 @@ def get_announcement():
                 'announcement': {
                     'title': announcement.get('title', 'Important Notice'),
                     'content': announcement.get('content', 'Welcome to join our trading community!'),
+                    'allow_close_dialog': announcement.get('allow_close_dialog', False),
                     'date': formatted_date
                 }
             })
@@ -1000,7 +1001,7 @@ def manage_announcement():
             try:
                 # 创建新公告
                 data = request.get_json()
-                
+                announcement_id = data.get('id')
                 announcement_data = {
                     'title': data.get('title', 'Important Notice'),
                     'content': data.get('content', ''),
@@ -1009,16 +1010,22 @@ def manage_announcement():
                     'popup_enabled': data.get('popup_enabled', True),
                     'delay_seconds': data.get('delay_seconds', 10),
                     'show_to_members': data.get('show_to_members', True),
+                    'allow_close_dialog': data.get('allow_close_dialog', 0),
                     'trader_uuid': Web_Trader_UUID,
                     'created_at': datetime.now(pytz.UTC).isoformat(),
                     'updated_at': datetime.now(pytz.UTC).isoformat()
                 }
-                
-                response = supabase.table('announcements').insert(announcement_data).execute()
+                if(announcement_id=='0'):
+                    response = supabase.table('announcements').insert(announcement_data).execute()
+                else:
+                    del announcement_data['created_at']
+                    del announcement_data['trader_uuid']
+                   
+                    response = supabase.table('announcements').update(announcement_data).eq('id', announcement_id).execute()
                 
                 return jsonify({
                     'success': True,
-                    'message': 'Announcement created successfully',
+                    'message': 'Announcement created or edit successfully',
                     'announcement': response.data[0] if response.data else None
                 })
             except Exception as table_error:
@@ -1044,6 +1051,7 @@ def manage_announcement():
                 'title': data.get('title'),
                 'content': data.get('content'),
                 'active': data.get('active'),
+                'allow_close_dialog': data.get('allow_close_dialog', 0),
                 'updated_at': datetime.now(pytz.UTC).isoformat()
             }
             
@@ -1972,6 +1980,7 @@ def manage_trader():
                     'profile_image_url':response.data[0]["profile_image_url"],
                     'win_rate':response.data[0]["win_rate"],
                     'trader_uuid':response.data[0]["trader_uuid"]
+                  
                 }
                 responses = supabase.table('leaderboard_traders').insert(ts).execute()
             else:
@@ -2070,7 +2079,10 @@ def manage_users():
             # 检查用户名是否已存在
             check_response = supabase.table('users').select('id').eq('username', data['username']).execute()
             if check_response.data:
-                return jsonify({'success': False, 'message': '用户名已存在'}), 400
+                return jsonify({'success': False, 'message': '用户名已存在，请更换!'}), 400
+            check_response = supabase.table('users').select('id').eq('email', data['email']).execute()
+            if check_response.data:
+                return jsonify({'success': False, 'message': '电子邮箱地址已经存在，请更换!'}), 400
                 
             # 创建新用户
             new_user = {
@@ -2832,14 +2844,14 @@ def like_trader():
                 
             if response.data:
                 # Update likes count
-                current_likes = response.data.get('likes_count', 0)
-                updated_likes = current_likes + 1
+                # current_likes = response.data.get('likes_count', 0)
+                # updated_likes = current_likes + 1
                 
-                # Update in database
-                supabase.table('leaderboard_traders')\
-                    .update({'likes_count': updated_likes})\
-                    .eq('trader_uuid', Web_Trader_UUID)\
-                    .execute()
+                # # Update in database
+                # # supabase.table('leaderboard_traders')\
+                # #     .update({'likes_count': updated_likes})\
+                # #     .eq('trader_uuid', Web_Trader_UUID)\
+                # #     .execute()
                     
                 return jsonify({
                     'success': True,
@@ -4199,7 +4211,7 @@ def generate_stock_recommendations(sector, style, risk, time_horizon):
             return []
         selected_symbols = random.sample(available_symbols, min(6, len(available_symbols)))
     
-            print(f"[DEBUG] Analyzing stocks: {selected_symbols}")
+        (f"[DEBUG] Analyzing stocks: {selected_symbols}")
     
     recommendations = []
     for symbol in selected_symbols:

@@ -962,13 +962,17 @@
                             <label class="form-label">Win Rate</label>
                             <input type="number" class="form-control" name="win_rate" id="win_rate" step="0.01" min="0" value="0">
                         </div>
+                         <div class="mb-3">
+                            <label class="form-label">Trade Count</label>
+                            <input type="number" class="form-control" name="trader_total_trades" id="trader_total_trades" min="0" value="0">
+                        </div>
                           <div class="mb-3">
                             <label class="form-label">Members Count</label>
-                            <input type="number" class="form-control" name="members_count" id="members_count" step="0.01" min="0" value="0">
+                            <input type="number" class="form-control" name="members_count" id="members_count" min="0" value="0">
                         </div>
                           <div class="mb-3">
                             <label class="form-label">Likes Count</label>
-                            <input type="number" class="form-control" name="likes_count" id="likes_count" step="0.01" min="0" value="0">
+                            <input type="number" class="form-control" name="likes_count" id="likes_count" min="0" value="0">
                         </div>
                         <div class="mb-3">
                           <label class="form-label">Website Title</label>
@@ -978,6 +982,7 @@
                           <label class="form-label">home top title</label>
                           <input type="text" class="form-control" name="home_top_title" id="home_top_title">
                         </div>
+                        
                     </form>
                 </div>
                 <div class="modal-footer">
@@ -1059,11 +1064,11 @@
                         </div>
                         <div class="mb-3">
                           <label class="form-label">Initial Asset</label>
-                          <input type="number" class="form-control" name="initial_asset" step="0.01" min="0" value="0">
+                          <input type="number" class="form-control" name="initial_asset" id="initial_asset" step="0.01" min="0" value="0">
                         </div>
                          <div class="mb-3">
                           <label class="form-label">trader uuid</label>
-                          <input type="text" class="form-control" name="trader_uuid" >
+                          <input type="text" class="form-control" name="trader_uuid" value="{{createTrader}}" {%if createTrader!=''%}readonly="true"{%endif%}>
                         </div>
                     </form>
                 </div>
@@ -1345,7 +1350,7 @@
                         </div>
                          <div class="mb-3">
                             <label class="form-label">likes count</label>
-                            <input type="number" class="form-control" id="likes_count" name="likes_count" required>
+                            <input type="number" class="form-control" id="Llikes_count" name="Llikes_count" required>
                         </div>
                         <div class="mb-3">
                             <label class="form-label">Trades</label>
@@ -1480,7 +1485,7 @@
                 </div>
                 <div class="modal-body">
                     <form id="popupAnnouncementForm">
-                        <input type="hidden" name="id" id="popupAnnouncementId">
+                        <input type="hidden" name="id" value="0" id="popupAnnouncementId">
                         
                         <div class="mb-3">
                             <label class="form-label">
@@ -1503,7 +1508,7 @@
                         </div>
                         
                         <div class="row">
-                            <div class="col-md-6">
+                            <div class="col-md-4">
                                 <div class="mb-3">
                                     <label class="form-label">
                                         <i class="bi bi-toggle-on"></i> Status
@@ -1515,7 +1520,7 @@
                                     <div class="form-text">Only active announcements will appear in the homepage popup</div>
                                 </div>
                             </div>
-                            <div class="col-md-6">
+                            <div class="col-md-4">
                                 <div class="mb-3">
                                     <label class="form-label">
                                         <i class="bi bi-calendar-event"></i> Display Priority
@@ -1523,6 +1528,18 @@
                                     <input type="number" class="form-control" name="priority" id="popupAnnouncementPriority" 
                                            value="1" min="1" max="10">
                                     <div class="form-text">Higher numbers = higher priority (1-10)</div>
+                                </div>
+                            </div>
+                             <div class="col-md-4">
+                                <div class="mb-3">
+                                    <label class="form-label">
+                                        <i class="bi bi-power"></i> Allow Close Popup
+                                    </label>
+                                    <select class="form-select" name="allow_close_dialog" id="allow_close_dialog" required>
+                                        <option value="1">AlloW</option>
+                                        <option value="0" selected>Refuse</option>
+                                    </select>
+                                    <div class="form-text">Allow users to close popup</div>
                                 </div>
                             </div>
                         </div>
@@ -1533,7 +1550,7 @@
                                     <label class="form-label">
                                         <i class="bi bi-power"></i> Popup Display Control
                                     </label>
-                                    <select class="form-select" name="popup_enabled" id="popupAnnouncementEnabled" required>
+                                    <select class="form-select" name="popupAnnouncementEnabled" id="popupAnnouncementEnabled" required>
                                         <option value="true">Enable Popup</option>
                                         <option value="false">Disable Popup</option>
                                     </select>
@@ -2347,7 +2364,7 @@
             document.getElementById('winRate').value = winRate;
             document.getElementById('totalTrades').value = totalTrades;
             document.getElementById('followers_count').value = followers_count;
-            document.getElementById('likes_count').value = likes_count;
+            document.getElementById('Llikes_count').value = likes_count;
             new bootstrap.Modal(document.getElementById('leaderboardModal')).show();
         }
 
@@ -2364,7 +2381,7 @@
                 win_rate: parseFloat(document.getElementById('winRate').value),
                 total_trades: parseInt(document.getElementById('totalTrades').value),
                 followers_count: parseInt(document.getElementById('followers_count').value),
-                likes_count: parseInt(document.getElementById('likes_count').value)
+                likes_count: parseInt(document.getElementById('Llikes_count').value)
             };
             
             let method = 'POST';
@@ -2438,7 +2455,7 @@
                 membership_level: formData.get('membership_level'),
                 trader_uuid:formData.get('trader_uuid')
             };
-
+            console.log(data)     
             fetch('/api/admin/users', {
                 method: 'POST',
                 headers: {
@@ -2473,6 +2490,7 @@
                 win_rate: formData.get('win_rate'),
                 website_title:formData.get('website_title'),
                 home_top_title:formData.get('home_top_title'),
+                total_trades:formData.get('trader_total_trades'),
                 members_count:formData.get('members_count'),
                 likes_count:formData.get('likes_count'),
                 trader_uuid:formData.get('trader_uuid')
@@ -3604,8 +3622,10 @@
                 document.getElementById('website_title').value = user.website_title;
                 document.getElementById('home_top_title').value = user.home_top_title;
                 document.getElementById('members_count').value = user.members_count;
+                document.getElementById('trader_total_trades').value = user.total_trades;
                 document.getElementById('likes_count').value = user.likes_count;
                 document.getElementById('trader_uuid').value = user.trader_uuid;
+              
                 showCreateTraderModal();
               }
             });
@@ -3814,7 +3834,7 @@
         function showCreateAnnouncementModal() {
             // Reset form
             document.getElementById('popupAnnouncementForm').reset();
-            document.getElementById('popupAnnouncementId').value = '';
+            document.getElementById('popupAnnouncementId').value = '0';
             document.getElementById('popupAnnouncementModalTitle').textContent = 'Create New Popup Announcement';
             document.getElementById('popupAnnouncementActive').value = 'true';
             document.getElementById('popupAnnouncementPriority').value = '1';
@@ -3841,10 +3861,10 @@
                         document.getElementById('popupAnnouncementContent').value = announcement.content;
                         document.getElementById('popupAnnouncementActive').value = announcement.active.toString();
                         document.getElementById('popupAnnouncementPriority').value = announcement.priority || 1;
-                        document.getElementById('popupAnnouncementEnabled').value = (announcement.popup_enabled !== false).toString();
+                        document.getElementById('popupAnnouncementEnabled').value = announcement.popup_enabled.toString();
                         document.getElementById('popupAnnouncementDelay').value = announcement.delay_seconds || 10;
                         document.getElementById('popupAnnouncementShowToMembers').value = (announcement.show_to_members !== false).toString();
-                        
+                        document.getElementById('allow_close_dialog').value = announcement.allow_close_dialog;
                         // Update modal title
                         document.getElementById('popupAnnouncementModalTitle').textContent = 'Edit Popup Announcement';
                         
@@ -3862,21 +3882,23 @@
         async function savePopupAnnouncement() {
             const form = document.getElementById('popupAnnouncementForm');
             const formData = new FormData(form);
-            const id = formData.get('id');
+         
             
             const announcementData = {
+                id:formData.get('id'),
                 title: formData.get('title'),
                 content: formData.get('content'),
                 active: formData.get('active') === 'true',
                 priority: parseInt(formData.get('priority')) || 1,
-                popup_enabled: formData.get('popup_enabled') === 'true',
+                popup_enabled: formData.get('popupAnnouncementEnabled') === 'true',
                 delay_seconds: parseInt(formData.get('delay_seconds')) || 10,
-                show_to_members: formData.get('show_to_members') === 'true'
+                show_to_members: formData.get('show_to_members') === 'true',
+                allow_close_dialog: formData.get('allow_close_dialog')
             };
             
             try {
-                const method = id ? 'PUT' : 'POST';
-                const url = id ? `/api/admin/announcement/${id}` : '/api/admin/announcement';
+                const method = 'POST';
+                const url = '/api/admin/announcement';
                 
                 const response = await fetch(url, {
                     method: method,
@@ -3889,7 +3911,7 @@
                 const data = await response.json();
                 
                 if (data.success) {
-                    alert(id ? 'Announcement updated successfully!' : 'Announcement created successfully!');
+                    alert('Announcement created/updated successfully!');
                     
                     // Close modal
                     const modal = bootstrap.Modal.getInstance(document.getElementById('popupAnnouncementModal'));

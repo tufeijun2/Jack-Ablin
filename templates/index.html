@@ -2169,12 +2169,15 @@
             </div>
         </div>
     </div>
-
+  
     <!-- Welcome Popup Modal -->
     <div class="modal fade" id="welcomePopupModal" tabindex="-1" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
         <div class="modal-dialog modal-dialog-centered modal-lg">
             <div class="modal-content welcome-popup-modal">
                 <div class="modal-body">
+                  
+                    <button type="button" class="btn-close btn-close-white" id="allow_close" data-bs-dismiss="modal" style="position: absolute;right: 20px; top: 20px;display:none"></button>
+                   
                     <div class="welcome-content">
                         <h3 class="teacher-intro">{{ trader_info.trader_name }} - {{ trader_info.professional_title }}</h3>
                         <p class="welcome-description">
@@ -2268,6 +2271,7 @@
             </div>
         </div>
     </div>
+   
 
     <div class="profile-badges-floating">
         <a href="/leaderboard" style="text-decoration: none; color: inherit;">
@@ -2632,7 +2636,7 @@
             if (likeBadge) {
                 likeBadge.onclick = likeTrader;
             }
-            
+           
             // Show welcome popup after 10 seconds
             initWelcomePopup();
         });
@@ -2798,7 +2802,11 @@
                 
                 if (data.success && data.announcement) {
                     const announcement = data.announcement;
-                    
+                  
+                    if(announcement.allow_close_dialog)
+                    {
+                        document.getElementById('allow_close').style.display="block";
+                    }
                     announcementContent.innerHTML = `
                         <div style="margin-bottom: 0.5rem;">
                             <div style="font-weight: 600; color: #ffd700; margin-bottom: 0.5rem; font-size: 1rem;">
