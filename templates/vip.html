@@ -1154,7 +1154,7 @@
                 const adminBtn = document.createElement('a');
                 adminBtn.href = '/admin';
                 adminBtn.className = 'btn admin-btn ms-2';
-                adminBtn.innerHTML = '<i class="bi bi-gear-fill me-2"></i>管理后台';
+                adminBtn.innerHTML = '<i class="bi bi-gear-fill me-2"></i>Admin Panel';
                 loginBtn.parentElement.appendChild(adminBtn);
             }
         }
@@ -1207,52 +1207,16 @@
                     // Refresh page immediately after successful logout
                     window.location.reload();
                 } else {
-                    showToast('Logout failed', 'error');
+                    alert('Logout failed');
                 }
             })
             .catch(error => {
                 console.error('Logout error:', error);
-                showToast('An error occurred during logout', 'error');
+                alert('An error occurred during logout');
             });
         }
 
-        // Toast notification component
-        function showToast(message, type = 'info') {
-            const toastContainer = document.getElementById('toastContainer') || createToastContainer();
-            const toast = document.createElement('div');
-            toast.className = `toast align-items-center text-white bg-${type === 'success' ? 'success' : 'danger'} border-0`;
-            toast.setAttribute('role', 'alert');
-            toast.setAttribute('aria-live', 'assertive');
-            toast.setAttribute('aria-atomic', 'true');
 
-            toast.innerHTML = `
-                <div class="d-flex">
-                    <div class="toast-body">
-                        ${message}
-                    </div>
-                    <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
-                </div>
-            `;
-
-            toastContainer.appendChild(toast);
-            const bsToast = new bootstrap.Toast(toast);
-            bsToast.show();
-
-            // 自动移除 toast
-            toast.addEventListener('hidden.bs.toast', function () {
-                toast.remove();
-            });
-        }
-
-        // 创建 Toast 容器
-        function createToastContainer() {
-            const container = document.createElement('div');
-            container.id = 'toastContainer';
-            container.className = 'toast-container position-fixed top-0 end-0 p-3';
-            container.style.zIndex = '1050';
-            document.body.appendChild(container);
-            return container;
-        }
 
         // 添加登录状态相关的样式
         const style = document.createElement('style');
@@ -1269,9 +1233,7 @@
                 text-decoration: none;
                 color: inherit;
             }
-            .toast {
-                min-width: 250px;
-            }
+
         `;
         document.head.appendChild(style);
 
@@ -1286,7 +1248,7 @@
                 progressCardLink.addEventListener('click', function(e) {
                     if (!isLoggedIn) {
                         e.preventDefault();
-                        showToast('Please log in first', 'danger');
+                        alert('Please log in first');
                         loginModal.show();
                     }
                 });

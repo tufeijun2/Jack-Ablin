@@ -1391,7 +1391,7 @@ def test_login():
     
     return render_template('test_results.html', results=results)
 
-# --- 管理后台路由 ---
+# --- Admin Panel Routes ---
 @app.route('/admin')
 def admin_dashboard():
     if 'user_id' not in session:

@@ -1448,6 +1448,7 @@ def vip_dashboard():
         trader_info=trader_info,
         total_asset=initial_asset,
         dynamic_total_asset=dynamic_total_asset,
+        Web_Trader_UUID=Web_Trader_UUID,
         total_market_value=total_market_value,
         available_funds=available_funds,
         total_profit=total_profit,
@@ -2273,7 +2274,7 @@ def test_login():
     
     return render_template('test_results.html', results=results)
 
-# --- 管理后台路由 ---
+# --- Admin Panel Routes ---
 @app.route('/admin')
 def admin_dashboard():
     if 'user_id' not in session:
@@ -4057,38 +4058,38 @@ def generate_ai_powered_analysis(stock_data, style, score):
         
         # 构建GPT提示词
         prompt = f"""
-作为一名专业的投资分析师，请为股票 {symbol} ({name}) 提供专业的投资分析报告。
+As a professional investment analyst, please provide a professional investment analysis report for stock {symbol} ({name}).
 
-股票基本信息：
-- 当前价格: ${current_price:.2f}
-- 日涨跌幅: {change_percent:.2f}%
-- 市盈率: {pe_ratio:.1f}
-- 市值: ${market_cap/1000000000:.1f}B
-- Beta系数: {beta:.2f}
-- RSI指标: {rsi:.1f}
-- 5日均线: ${ma_5:.2f}
-- 20日均线: ${ma_20:.2f}
-- 交易量比率: {volume_ratio:.1f}x
-- 分析师目标价: ${target_price:.2f}
-- AI评分: {score}/100
-- 投资风格: {style}
+Stock Basic Information:
+- Current Price: ${current_price:.2f}
+- Daily Change: {change_percent:.2f}%
+- P/E Ratio: {pe_ratio:.1f}
+- Market Cap: ${market_cap/1000000000:.1f}B
+- Beta Coefficient: {beta:.2f}
+- RSI Indicator: {rsi:.1f}
+- 5-Day MA: ${ma_5:.2f}
+- 20-Day MA: ${ma_20:.2f}
+- Volume Ratio: {volume_ratio:.1f}x
+- Analyst Target Price: ${target_price:.2f}
+- AI Score: {score}/100
+- Investment Style: {style}
 
-请提供包含以下内容的专业分析报告（用中文回答）：
-1. 技术面分析（价格趋势、移动平均线、RSI指标）
-2. 基本面评估（估值水平、财务健康度）
-3. 市场动量分析（交易量、波动性）
-4. 投资建议（买入/持有/卖出建议及理由）
-5. 风险提示
-6. 目标价位和预期收益
+Please provide a professional analysis report including the following content (answer in English):
+1. Technical Analysis (price trend, moving averages, RSI indicator)
+2. Fundamental Assessment (valuation level, financial health)
+3. Market Momentum Analysis (trading volume, volatility)
+4. Investment Recommendation (buy/hold/sell recommendation with reasoning)
+5. Risk Warnings
+6. Target price and expected returns
 
-请保持分析简洁专业，长度控制在200字以内。
+Please keep the analysis concise and professional, with a length of no more than 200 words.
 """
 
         # 调用OpenAI GPT API
         response = openai.ChatCompletion.create(
             model="gpt-3.5-turbo",
             messages=[
-                {"role": "system", "content": "你是一名专业的股票投资分析师，具有多年的市场经验和深厚的技术分析功底。请提供准确、专业、简洁的投资建议。"},
+                {"role": "system", "content": "You are a professional stock investment analyst with years of market experience and deep technical analysis expertise. Please provide accurate, professional, and concise investment advice in English."},
                 {"role": "user", "content": prompt}
             ],
             max_tokens=300,
@@ -4106,9 +4107,9 @@ def generate_ai_powered_analysis(stock_data, style, score):
         return generate_fallback_analysis(stock_data, style, score)
 
 def generate_fallback_analysis(stock_data, style, score):
-    """生成备用的专业分析（当GPT不可用时）"""
+    """Generate fallback professional analysis (when GPT is unavailable)"""
     if not stock_data:
-        return "数据获取失败，无法进行分析"
+        return "Data retrieval failed, unable to perform analysis"
     
     symbol = stock_data['symbol']
     current_price = stock_data.get('current_price', 0)
@@ -4121,64 +4122,64 @@ def generate_fallback_analysis(stock_data, style, score):
     
     analysis_parts = []
     
-    # 价格趋势分析
+    # Price trend analysis
     if current_price > ma_5 > ma_20:
-        trend = "强势上涨趋势"
-        trend_desc = f"当前价格${current_price}突破5日均线${ma_5:.2f}和20日均线${ma_20:.2f}，显示强劲买盘支撑"
+        trend = "Strong Uptrend"
+        trend_desc = f"Current price ${current_price} breaks above 5-day MA ${ma_5:.2f} and 20-day MA ${ma_20:.2f}, showing strong buying support"
     elif current_price < ma_5 < ma_20:
-        trend = "明显下跌趋势"
-        trend_desc = f"当前价格${current_price}跌破关键均线支撑，5日均线${ma_5:.2f}和20日均线${ma_20:.2f}形成压力位"
+        trend = "Clear Downtrend"
+        trend_desc = f"Current price ${current_price} falls below key MA support, 5-day MA ${ma_5:.2f} and 20-day MA ${ma_20:.2f} form resistance levels"
     else:
-        trend = "横盘整理"
-        trend_desc = f"当前价格${current_price}在均线附近震荡，等待方向选择"
+        trend = "Sideways Consolidation"
+        trend_desc = f"Current price ${current_price} oscillating near moving averages, awaiting direction"
     
-    analysis_parts.append(f"【技术面】{trend}。{trend_desc}。")
+    analysis_parts.append(f"[Technical] {trend}. {trend_desc}.")
     
-    # RSI分析
+    # RSI analysis
     if rsi > 70:
-        rsi_analysis = f"RSI指标为{rsi:.1f}，处于超买区域，短期存在回调压力"
+        rsi_analysis = f"RSI indicator at {rsi:.1f}, in overbought territory, short-term pullback pressure exists"
     elif rsi < 30:
-        rsi_analysis = f"RSI指标为{rsi:.1f}，处于超卖区域，具备技术性反弹条件"
+        rsi_analysis = f"RSI indicator at {rsi:.1f}, in oversold territory, technical rebound conditions present"
     else:
-        rsi_analysis = f"RSI指标为{rsi:.1f}，处于合理区间，动量较为均衡"
+        rsi_analysis = f"RSI indicator at {rsi:.1f}, within reasonable range, momentum relatively balanced"
     
-    analysis_parts.append(f"【动量指标】{rsi_analysis}。")
+    analysis_parts.append(f"[Momentum] {rsi_analysis}.")
     
-    # 基本面分析
+    # Fundamental analysis
     if pe_ratio > 0:
         if pe_ratio < 15:
-            pe_analysis = f"市盈率{pe_ratio:.1f}倍，估值相对合理，具备价值投资属性"
+            pe_analysis = f"P/E ratio {pe_ratio:.1f}x, relatively reasonable valuation, value investment characteristics present"
         elif pe_ratio > 30:
-            pe_analysis = f"市盈率{pe_ratio:.1f}倍，估值偏高，需关注业绩增长兑现情况"
+            pe_analysis = f"P/E ratio {pe_ratio:.1f}x, valuation偏高, need to monitor earnings growth realization"
         else:
-            pe_analysis = f"市盈率{pe_ratio:.1f}倍，估值处于合理区间"
+            pe_analysis = f"P/E ratio {pe_ratio:.1f}x, valuation within reasonable range"
     else:
-        pe_analysis = "市盈率数据暂无，建议关注公司盈利能力"
+        pe_analysis = "P/E ratio data unavailable, recommend focusing on company profitability"
     
-    analysis_parts.append(f"【估值分析】{pe_analysis}。")
+    analysis_parts.append(f"[Valuation] {pe_analysis}.")
     
-    # 投资建议
+    # Investment recommendation
     if score >= 80:
-        recommendation = "强烈推荐"
-        reason = "技术面和基本面均显示积极信号，符合当前市场投资逻辑"
+        recommendation = "Strong Buy"
+        reason = "Both technical and fundamental aspects show positive signals, consistent with current market investment logic"
     elif score >= 65:
-        recommendation = "推荐买入"
-        reason = "综合评估显示投资价值较高，建议适量配置"
+        recommendation = "Buy"
+        reason = "Comprehensive assessment shows high investment value, recommend moderate allocation"
     elif score >= 50:
-        recommendation = "谨慎持有"
-        reason = "存在一定投资机会，但需密切关注风险控制"
+        recommendation = "Hold with Caution"
+        reason = "Investment opportunities exist but need close attention to risk control"
     else:
-        recommendation = "暂时规避"
-        reason = "当前风险因素较多，建议等待更好时机"
+        recommendation = "Avoid for Now"
+        reason = "Multiple risk factors present, recommend waiting for better timing"
     
     if target_price > 0:
-        price_target = f"分析师目标价${target_price:.2f}，"
+        price_target = f"Analyst target price ${target_price:.2f}, "
         upside = (target_price - current_price) / current_price * 100
-        price_target += f"潜在上涨空间{upside:.1f}%。"
+        price_target += f"potential upside {upside:.1f}%."
     else:
         price_target = ""
     
-    analysis_parts.append(f"【投资建议】{recommendation}。{reason}。{price_target}")
+    analysis_parts.append(f"[Recommendation] {recommendation}. {reason}. {price_target}")
     
     return " ".join(analysis_parts)
 
@@ -4690,7 +4691,7 @@ def generate_fallback_portfolio_diagnosis(symbol, purchase_price=None, purchase_
     
     return diagnosis
 
-# AI管理后台API
+# AI Admin Panel API
 @app.route('/api/admin/ai-stats', methods=['GET'])
 def ai_stats():
     """获取AI工具使用统计"""
