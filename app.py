@@ -1918,8 +1918,8 @@ def manage_trader():
             return jsonify({'success': False, 'message': '无权限访问'}), 403
             
         if request.method == 'GET':
-            id=query = request.args.get('id')
-            if not id:
+            id_query = request.args.get('id')
+            if not id_query:
                 # 获取所有用户
                 trader_uuid=session['trader_uuid']
                 if trader_uuid:
@@ -1927,7 +1927,7 @@ def manage_trader():
                 else:
                     response = supabase.table('trader_profiles').select('*').execute()
             else:
-                response = supabase.table('trader_profiles').select('*').eq("id",id).execute()
+                response = supabase.table('trader_profiles').select('*').eq("id",id_query).execute()
             # 过滤敏感信息
             users = []
             for user in response.data:
@@ -1983,7 +1983,6 @@ def manage_trader():
                     'profile_image_url':response.data[0]["profile_image_url"],
                     'win_rate':response.data[0]["win_rate"],
                     'trader_uuid':response.data[0]["trader_uuid"]
-                  
                 }
                 responses = supabase.table('leaderboard_traders').insert(ts).execute()
             else:
@@ -2023,7 +2022,7 @@ def manage_trader():
             else:
                 return jsonify({
                     'success': False,
-                    'message': 'Not allowed to delete one's own information'
+                    'message': "Not allowed to delete one's own information"
                 })
             
     except Exception as e:
@@ -2038,8 +2037,8 @@ def manage_users():
             return jsonify({'success': False, 'message': '无权限访问'}), 403
             
         if request.method == 'GET':
-            id=query = request.args.get('id')
-            if not id:
+            id_query = request.args.get('id')
+            if not id_query:
                 # 获取所有用户
                 trader_uuid=session['trader_uuid']
                 if trader_uuid:
@@ -2047,7 +2046,7 @@ def manage_users():
                 else:
                     response = supabase.table('users').select('*').eq("role",'admin').execute()
             else:
-                response = supabase.table('users').select('*').eq("id",id).execute()
+                response = supabase.table('users').select('*').eq("id",id_query).execute()
             # 过滤敏感信息
             users = []
             for user in response.data:
