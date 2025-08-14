@@ -4873,6 +4873,97 @@ function closePreview() {
 .modal-body {
   overflow-x: auto;
 }
+
+/* 手机端弹窗优化 */
+@media (max-width: 768px) {
+  /* 自定义弹窗优化 */
+  #rankings-modal > div,
+  #videos-modal > div,
+  #documents-modal > div {
+    width: 95vw !important;
+    max-width: 95vw !important;
+    max-height: 85vh !important;
+    padding: 20px 15px 20px 15px !important;
+    border-radius: 15px !important;
+    margin: 2.5vh auto !important;
+  }
+  
+  #rankings-modal h3,
+  #videos-modal h3,
+  #documents-modal h3 {
+    font-size: 1.2rem !important;
+    margin-bottom: 20px !important;
+  }
+  
+  #rankings-modal button,
+  #videos-modal button,
+  #documents-modal button {
+    font-size: 24px !important;
+    right: 15px !important;
+    top: 15px !important;
+    padding: 5px !important;
+  }
+  
+  /* 文档预览弹窗优化 */
+  #preview-modal > div {
+    width: 95vw !important;
+    height: 90vh !important;
+    margin: 5vh auto !important;
+    padding: 20px !important;
+    border-radius: 12px !important;
+  }
+  
+  #preview-modal button {
+    font-size: 20px !important;
+    right: 20px !important;
+    top: 20px !important;
+  }
+  
+  /* 表格响应式优化 */
+  .vip-table {
+    font-size: 0.85rem !important;
+  }
+  
+  .vip-table th,
+  .vip-table td {
+    padding: 0.5rem 0.25rem !important;
+  }
+}
+
+/* 超小屏幕优化 */
+@media (max-width: 480px) {
+  #rankings-modal > div,
+  #videos-modal > div,
+  #documents-modal > div {
+    width: 98vw !important;
+    max-width: 98vw !important;
+    padding: 18px 12px 18px 12px !important;
+    border-radius: 12px !important;
+  }
+  
+  #rankings-modal h3,
+  #videos-modal h3,
+  #documents-modal h3 {
+    font-size: 1.1rem !important;
+    margin-bottom: 18px !important;
+  }
+  
+  #preview-modal > div {
+    width: 98vw !important;
+    height: 95vh !important;
+    margin: 2.5vh auto !important;
+    padding: 18px !important;
+  }
+  
+  .vip-table {
+    font-size: 0.8rem !important;
+  }
+  
+  .vip-table th,
+  .vip-table td {
+    padding: 0.4rem 0.2rem !important;
+  }
+}
 </style>
 
 <script>
