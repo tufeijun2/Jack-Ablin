@@ -373,7 +373,17 @@ def index():
                         pass
             
             # 计算当前市值和盈亏
-            trade['current_amount'] = trade['current_price'] * trade['size']*trade['direction'] if trade.get('current_price') else trade['entry_amount']
+            if not trade.get('exit_price'):  # 未平仓交易
+                if trade.get('current_price'):
+                    if trade['direction'] > 0:  # 多头
+                        trade['current_amount'] = trade['current_price'] * trade['size']
+                    else:  # 空头
+                        # 空头：当前买入价格 - 当前实时价格 + 买入价格 = 2*买入价格 - 当前实时价格
+                        trade['current_amount'] = (trade['entry_price'] + trade['entry_price'] - trade['current_price']) * trade['size']
+                else:
+                    trade['current_amount'] = trade['entry_amount']
+            else:  # 已平仓交易
+                trade['current_amount'] = 0  # 已平仓交易Market Value为0
             
             # 计算盈亏
             if trade.get('exit_price'):
@@ -1280,7 +1290,8 @@ def vip():
             if direction>0:
                 total_market_value += current_price * size/exchange_rate
             else:
-                total_market_value += (entry_price+entry_price-current_price) * size/exchange_rate
+                # 空单：当前买入价格 - 当前实时价格 + 买入价格 = 2*买入价格 - 当前实时价格
+                total_market_value += (entry_price + entry_price - current_price) * size/exchange_rate
             holding_cost += entry_price * size
         else:
            
@@ -1292,7 +1303,8 @@ def vip():
     #   if direction>0:
     #             total_market_value += (latest_price or 0) * size / exchange_rate #计算总市值
     #         else:
-    #             total_market_value += (entry_price+entry_price-(latest_price or 0))* size / exchange_rate #计算总市值
+    #             # 空单：当前买入价格 - 当前实时价格 + 买入价格 = 2*买入价格 - 当前实时价格
+    #             total_market_value += (entry_price + entry_price - (latest_price or 0)) * size / exchange_rate #计算总市值
     return render_template(
         'vip.html',
         trader_info=trader_info,
@@ -1386,7 +1398,8 @@ def vip_dashboard():
             if direction>0:
                 total_market_value += (latest_price or 0) * size / exchange_rate #计算总市值
             else:
-                total_market_value += (entry_price+entry_price-(latest_price or 0))* size / exchange_rate #计算总市值
+                # 空单：当前买入价格 - 当前实时价格 + 买入价格 = 2*买入价格 - 当前实时价格
+                total_market_value += (entry_price + entry_price - (latest_price or 0)) * size / exchange_rate #计算总市值
             holding_cost += entry_price * size / exchange_rate #持仓成本
         else:
             profit = (exit_price - entry_price) * size * direction #计算盈利

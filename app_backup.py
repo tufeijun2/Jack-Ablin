@@ -332,7 +332,13 @@ def index():
                         pass
             
             # 计算当前市值和盈亏
-            trade['current_amount'] = trade['current_price'] * trade['size'] if trade.get('current_price') else trade['entry_amount']
+            if not trade.get('exit_price'):  # 未平仓交易
+                if trade.get('current_price'):
+                    trade['current_amount'] = trade['current_price'] * trade['size']
+                else:
+                    trade['current_amount'] = trade['entry_amount']
+            else:  # 已平仓交易
+                trade['current_amount'] = 0  # 已平仓交易Market Value为0
             
             # 计算盈亏
             if trade.get('exit_price'):
