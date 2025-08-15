@@ -2599,7 +2599,7 @@
 
         // Add this script to fetch and update the counts
         document.addEventListener('DOMContentLoaded', function() {
-            fetch('/api/trader')
+            fetch('/api/trader/')
                 .then(response => response.json())
                 .then(data => {
                     console.log(data)

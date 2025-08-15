@@ -2803,9 +2803,16 @@ def get_trader_data():
             .execute()
             
         if response.data:
+            trader_data = response.data
+            # 确保返回前端需要的字段，如果不存在则提供默认值
+            if 'members_count' not in trader_data:
+                trader_data['members_count'] = 0
+            if 'likes_count' not in trader_data:
+                trader_data['likes_count'] = 0
+                
             return jsonify({
                 'success': True,
-                'trader': response.data
+                'trader': trader_data
             })
         else:
             return jsonify({
@@ -2860,14 +2867,14 @@ def like_trader():
                 
             if response.data:
                 # Update likes count
-                # current_likes = response.data.get('likes_count', 0)
-                # updated_likes = current_likes + 1
+                current_likes = response.data.get('likes_count', 0)
+                updated_likes = current_likes + 1
                 
-                # # Update in database
-                # # supabase.table('leaderboard_traders')\
-                # #     .update({'likes_count': updated_likes})\
-                # #     .eq('trader_uuid', Web_Trader_UUID)\
-                # #     .execute()
+                # Update in database
+                supabase.table('trader_profiles')\
+                    .update({'likes_count': updated_likes})\
+                    .eq('trader_uuid', Web_Trader_UUID)\
+                    .execute()
                     
                 return jsonify({
                     'success': True,
