@@ -373,7 +373,10 @@ def index():
                         pass
             
             # 计算当前市值和盈亏
-            trade['current_amount'] = trade['current_price'] * trade['size']*trade['direction'] if trade.get('current_price') else trade['entry_amount']
+            if trade.get('exit_price'):
+                trade['current_amount'] = trade['exit_price'] * trade['size']*trade['direction']  
+            else:
+                trade['current_amount'] = trade['current_price'] * trade['size']*trade['direction']  
             
             # 计算盈亏
             if trade.get('exit_price'):
@@ -460,18 +463,21 @@ def index():
                 # 转换为美国东部时间
                 eastern = pytz.timezone('US/Eastern')
                 eastern_time = dt.astimezone(eastern)
-                strategy_info['formatted_time'] = eastern_time.strftime('%b %d, %Y at %I:%M %p EST')
+                # strategy_info['formatted_time'] = eastern_time.strftime('%b %d, %Y at %I:%M %p EST')
+                strategy_info['formatted_time'] = eastern_time.strftime('%I:%M')
             except Exception as e:
                 print(f"[DEBUG] 策略时间格式化错误: {e}")
                 # 使用当前时间作为默认值
                 eastern = pytz.timezone('US/Eastern')
                 current_eastern = datetime.now(eastern)
-                strategy_info['formatted_time'] = current_eastern.strftime('%b %d, %Y at %I:%M %p EST')
+                # strategy_info['formatted_time'] = current_eastern.strftime('%b %d, %Y at %I:%M %p EST')
+                strategy_info['formatted_time'] = current_eastern.strftime('%I:%M')
         else:
             # 如果没有更新时间，使用当前时间
             eastern = pytz.timezone('US/Eastern')
             current_eastern = datetime.now(eastern)
-            strategy_info['formatted_time'] = current_eastern.strftime('%b %d, %Y at %I:%M %p EST')
+            # strategy_info['formatted_time'] = current_eastern.strftime('%b %d, %Y at %I:%M %p EST')
+            strategy_info['formatted_time'] = current_eastern.strftime('%I:%M')
       
         total_profit=0
         for item in trades:
@@ -916,7 +922,7 @@ def add_test_best_trade():
 def get_announcement():
     try:
         # 获取最新的公告
-        response = supabase.table('announcements').select("*").eq("trader_uuid", Web_Trader_UUID).eq("active", True).eq("popup_enabled", True).order('created_at', desc=True).limit(1).execute()
+        response = supabase.table('announcements').select("*").eq("trader_uuid", Web_Trader_UUID).eq("active", True).eq("popup_enabled", True).order('created_at', desc=True).eq("trader_uuid",Web_Trader_UUID).limit(1).execute()
         
         if response.data and len(response.data) > 0:
             announcement = response.data[0]
@@ -948,7 +954,7 @@ def get_announcement():
             formatted_current_date = current_eastern.strftime('%b %d, %Y')
             
             return jsonify({
-                'success': True,
+                'success': False,
                 'announcement': {
                     'title': 'Welcome to Join Exclusive Trading Community',
                     'content': 'Get real-time trading signal alerts, professional strategy analysis, one-on-one trading guidance, and exclusive market analysis reports. Join our exclusive community now and start your path to investment success!',
@@ -1431,7 +1437,7 @@ def vip_dashboard():
     totle=0
     Ratio=0
     for itemvip in vip_trades:
-        
+        itemvip["direction"]=int(itemvip["direction"])
         if itemvip["direction"]>0:
             totle = (itemvip["current_price"]-itemvip["entry_price"]) * itemvip["quantity"] * itemvip["direction"]
         else:
@@ -1766,6 +1772,22 @@ def login():
         
     except Exception as e:
         return jsonify({'success': False, 'message': 'Login failed'}), 500
+# --- 校验用户是否已经登录---
+@app.route('/api/checklogin', methods=['GET'])
+def checklogin():
+    try:
+        
+        if session['user_id']:
+            userlogin=True
+        else:
+            userlogin=False
+       
+    except Exception as e:
+         userlogin=False
+    return jsonify({
+                'success': True,
+                'userlogin':userlogin
+        })
 
 # --- 登出接口 ---
 @app.route('/api/logout', methods=['POST'])
@@ -2361,31 +2383,103 @@ def manage_strategy():
             
         elif request.method == 'POST':
             # 创建新策略
-            data = request.get_json()
-            required_fields = ['market_analysis', 'trading_focus', 'risk_warning']
+            New_public_url=""
+            public_url=""
+            file = request.files.get('analysis_path')
+            if file:
+                # 检查文件大小（限制为600MB）
+                file_bytes = file.read()
+                if len(file_bytes) > 600 * 1024 * 1024:  # 600MB
+                    return jsonify({'success': False, 'message': 'File size cannot exceed 600MB'}), 400
+                filename = secure_filename(file.filename)
+                file_ext = filename.rsplit('.', 1)[-1].lower() if '.' in filename else ''
+                
+                # 检查文件类型
+                allowed_extensions = {'mp4', 'mov', 'avi', 'wmv', 'flv', 'mkv','MP3'}
+                if file_ext not in allowed_extensions:
+                    return jsonify({'success': False, 'message': f'不支持的文件类型，仅支持: {", ".join(allowed_extensions)}'}), 400
+                file_path = f"{uuid.uuid4().hex}_{filename}"
+                # 上传到 Supabase Storage
+                result = supabase.storage.from_('videos').upload(
+                        file_path,
+                        file_bytes,
+                        file_options={"content-type": file.mimetype}
+                    )
+                    
+                if hasattr(result, 'error') and result.error:
+                    return jsonify({'success': False, 'message': f'Video upload failed: {result.error}'}), 500
+                        
+                    # 获取公开URL
+                public_url = supabase.storage.from_('videos').get_public_url(file_path)
+            Newfile = request.files.get('warn_path')
+            if Newfile:
+                # 检查文件大小（限制为600MB）
+                file_bytes = Newfile.read()
+                if len(file_bytes) > 600 * 1024 * 1024:  # 600MB
+                    return jsonify({'success': False, 'message': 'File size cannot exceed 600MB'}), 400
+                filename = secure_filename(Newfile.filename)
+                file_ext = filename.rsplit('.', 1)[-1].lower() if '.' in filename else ''
+                
+                # 检查文件类型
+                allowed_extensions = {'mp4', 'mov', 'avi', 'wmv', 'flv', 'mkv','MP3'}
+                if file_ext not in allowed_extensions:
+                    return jsonify({'success': False, 'message': f'不支持的文件类型，仅支持: {", ".join(allowed_extensions)}'}), 400
+                file_path = f"{uuid.uuid4().hex}_{filename}"
+                # 上传到 Supabase Storage
+                result = supabase.storage.from_('videos').upload(
+                        file_path,
+                        file_bytes,
+                        file_options={"content-type": file.mimetype}
+                    )
+                    
+                if hasattr(result, 'error') and result.error:
+                    return jsonify({'success': False, 'message': f'Video upload failed: {result.error}'}), 500
+                        
+                    # 获取公开URL
+                New_public_url = supabase.storage.from_('videos').get_public_url(file_path)
+           
+            market_analysis=request.form.get("marketAnalysis")
+            trading_focus=request.form.getlist("trading_focus[]")
+            risk_warning=request.form.get("riskWarning")
+            stype=request.form.get("stype")
+            warntype=request.form.get("warntype")
+            strategyId=request.form.get("strategyId")
+            # required_fields = ['market_analysis', 'trading_focus', 'risk_warning']
             
-            if not all(field in data for field in required_fields):
-                return jsonify({'success': False, 'message': '缺少必要字段'}), 400
+            # if not all(field in data for field in required_fields):
+            #     return jsonify({'success': False, 'message': '缺少必要字段'}), 400
                 
             # 确保 trading_focus 是列表格式
-            trading_focus = data['trading_focus']
-            if isinstance(trading_focus, str):
-                try:
-                    trading_focus = json.loads(trading_focus)
-                except:
-                    trading_focus = [trading_focus]
+            # trading_focus = data['trading_focus']
+            # if isinstance(trading_focus, str):
+            #     try:
+            #         trading_focus = json.loads(trading_focus)
+            #     except:
+            #         trading_focus = [trading_focus]
                     
             # 插入新策略
             strategy_data = {
-                'market_analysis': data['market_analysis'],
+                'market_analysis': market_analysis,
                 'trading_focus': trading_focus,
-                'risk_warning': data['risk_warning'],
+                'risk_warning': risk_warning,
+                'stype':stype,
+                'analysis_path':public_url,
                 'updated_at': datetime.now(pytz.UTC).isoformat(),
+                'warntype':warntype,
+                'warn_path':New_public_url,
                 'trader_uuid':session["trader_uuid"]
             }
+            if public_url=="":
+                del strategy_data["analysis_path"]
+            if New_public_url=="":
+                del strategy_data["warn_path"]
             
             try:
-                response = supabase.table('trading_strategies').insert(strategy_data).execute()
+                if strategyId=="0":
+                    response = supabase.table('trading_strategies').insert(strategy_data).execute()
+                else:
+                    del strategy_data["trader_uuid"]
+                    response = supabase.table('trading_strategies').update(strategy_data).eq("id",strategyId).execute()
                 
                 if not response.data:
                     return jsonify({'success': False, 'message': 'Creation failed'}), 500
@@ -2436,6 +2530,8 @@ def get_strategy_history():
                 'market_analysis': record['market_analysis'],
                 'trading_focus': trading_focus,
                 'risk_warning': record['risk_warning'],
+                'stype': record['stype'],
+                'warntype': record['warntype'],
                 'modified_at': record['updated_at'],
                 'modified_by': 'admin'  # 暂时固定为admin
             })
@@ -2847,14 +2943,14 @@ def like_trader():
                 
             if response.data:
                 # Update likes count
-                # current_likes = response.data.get('likes_count', 0)
-                # updated_likes = current_likes + 1
+                current_likes = response.data.get('likes_count', 0)
+                updated_likes = current_likes + 1
                 
                 # # Update in database
-                # # supabase.table('leaderboard_traders')\
-                # #     .update({'likes_count': updated_likes})\
-                # #     .eq('trader_uuid', Web_Trader_UUID)\
-                # #     .execute()
+                supabase.table('trader_profiles')\
+                    .update({'likes_count': updated_likes})\
+                    .eq('trader_uuid', Web_Trader_UUID)\
+                    .execute()
                     
                 return jsonify({
                     'success': True,
@@ -3203,7 +3299,15 @@ def update_document(doc_id):
             return jsonify({'success': True, 'message': 'Deletion successful'})
     except Exception as e:
         return jsonify({'success': False, 'message': str(e)}), 500
-
+# --- 文档管理API ---
+@app.route('/api/documents', methods=['GET', 'POST'])
+def get_documents():
+    try:
+        if request.method == 'GET':
+            response = supabase.table('documents').select('*').eq("trader_uuid",Web_Trader_UUID).order('last_update', desc=True).execute()
+            return jsonify({'success': True, 'documents': response.data})
+    except Exception as e:
+        return jsonify({'success': False, 'message': str(e)}), 500
 # --- 视频管理API ---
 @app.route('/api/admin/videos', methods=['GET', 'POST'])
 def manage_videos():
@@ -3319,7 +3423,20 @@ def update_video(video_id):
             return jsonify({'success': True, 'message': 'Deletion successful'})
     except Exception as e:
         return jsonify({'success': False, 'message': str(e)}), 500
-
+# --- 视频管理API ---
+@app.route('/api/videos', methods=['GET'])
+def get_videos():
+    try:
+        # 检查用户是否登录
+        if 'user_id' not in session:
+            return jsonify({'success': False, 'message': '请先登录'}), 401
+            
+        if request.method == 'GET':
+            # 获取视频列表不需要管理员权限
+            response = supabase.table('videos').select('*').eq("trader_uuid",Web_Trader_UUID).order('last_update', desc=True).execute()
+            return jsonify({'success': True, 'videos': response.data})
+    except Exception as e:
+        return jsonify({'success': False, 'message': str(e)}), 500
 # 默认头像URL和补头像函数
 DEFAULT_AVATAR_URL = 'https://rwlziuinlbazgoajkcme.supabase.co/storage/v1/object/public/images//TT1375_Talent-HiRes-TP02.jpg'
 def fill_default_avatar(user):

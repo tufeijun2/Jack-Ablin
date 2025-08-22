@@ -695,6 +695,8 @@
     <script>
         // AI Stock Picker Function
         async function runStockPicker() {
+            var today = new Date().toISOString().slice(0, 10);
+            var likeKey = 'runStockPicker_' + today;
             const btn = document.getElementById('pickBtn');
             const results = document.getElementById('stockPickerResults');
             const loading = document.getElementById('pickerLoading');
@@ -712,6 +714,32 @@
             };
             
             try {
+                const responselogin = await fetch('/api/checklogin', {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    }
+                });
+                if(responselogin.ok)
+                {
+                   
+                    const data = await responselogin.json();
+                  
+                    if(!data.userlogin && data.success){
+                         if (localStorage.getItem(likeKey)) {
+                            alert('You have already used it once today. If you want to continue using it, please log in!');
+                              results.innerHTML = `
+                            <div class="alert alert-danger">
+                                <i class="bi bi-exclamation-triangle"></i>
+                                Error generating recommendations: You have already used it once today. If you want to continue using it, please log in!
+                                <a href="/viplogin">Login</a>
+                            </div>
+                        `;
+                            return;
+                        }
+                    }
+                }
+
                 const response = await fetch('/api/ai/stock-picker', {
                     method: 'POST',
                     headers: {
@@ -748,6 +776,7 @@
                 loading.style.display = 'none';
                 results.style.display = 'block';
                 btn.disabled = false;
+                localStorage.setItem(likeKey, '1');
             }
         }
         
@@ -839,6 +868,8 @@
         
         // Portfolio AI Stock Diagnosis Function
         async function runPortfolioDiagnosis() {
+             var today = new Date().toISOString().slice(0, 10);
+            var likeKey = 'runPortfolioDiagnosis_' + today;
             const btn = document.getElementById('diagnoseBtn');
             const results = document.getElementById('stockDiagnosisResults');
             const loading = document.getElementById('diagnosisLoading');
@@ -871,6 +902,31 @@
             };
             
             try {
+                 const responselogin = await fetch('/api/checklogin', {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    }
+                });
+                if(responselogin.ok)
+                {
+                   
+                    const data = await responselogin.json();
+                  
+                    if(!data.userlogin && data.success){
+                         if (localStorage.getItem(likeKey)) {
+                            alert('You have already used it once today. If you want to continue using it, please log in!');
+                              results.innerHTML = `
+                            <div class="alert alert-danger">
+                                <i class="bi bi-exclamation-triangle"></i>
+                                Error generating recommendations: You have already used it once today. If you want to continue using it, please log in!
+                                <a href="/viplogin">Login</a>
+                            </div>
+                        `;
+                            return;
+                        }
+                    }
+                }
                 const response = await fetch('/api/ai/portfolio-diagnosis', {
                     method: 'POST',
                     headers: {
@@ -907,6 +963,7 @@
                 loading.style.display = 'none';
                 results.style.display = 'block';
                 btn.disabled = false;
+                localStorage.setItem(likeKey, '1');
             }
         }
         

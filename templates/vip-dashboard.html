@@ -3765,26 +3765,26 @@
     </style>
     <!-- Video Courses -->
     <div class="section">
-                        <h2 class="card-title">视频课程</h2>
+                        <h2 class="card-title">Video Tutorials</h2>
         <div id="videos-container" class="flex-row"></div>
         <div style="text-align:center;margin-top:18px;">
-                                <button id="show-all-videos-btn" class="styled-button">查看所有视频</button>
+                                <button id="show-all-videos-btn" class="styled-button">Show all videos</button>
         </div>
     </div>
     <!-- Video Modal -->
     <div id="videos-modal" style="display:none;position:fixed;top:0;left:0;width:100vw;height:100vh;background:rgba(0,0,0,0.7);z-index:2000;align-items:center;justify-content:center;">
         <div style="background:#232B3E;border-radius:18px;max-width:1100px;width:98vw;max-height:92vh;overflow:auto;padding:32px 18px 24px 18px;position:relative;">
             <button onclick="closeVideosModal()" style="position:absolute;right:18px;top:18px;background:none;border:none;color:#fff;font-size:28px;cursor:pointer;">×</button>
-                                <h3 style="color:#FFD700;text-align:center;margin-bottom:24px;">所有视频课程</h3>
+                                <h3 style="color:#FFD700;text-align:center;margin-bottom:24px;">All videos</h3>
             <div class="row" id="videos-modal-list"></div>
         </div>
     </div>
     <!-- Documents -->
     <div class="section">
-                        <h2 class="card-title">文档</h2>
+                        <h2 class="card-title">Documents</h2>
         <div id="documents-container"></div>
         <div style="text-align:center;margin-top:24px;">
-                                <button id="show-all-documents-btn" class="styled-button" style="display:none;">查看所有文档</button>
+                                <button id="show-all-documents-btn" class="styled-button" style="display:block;">Show all Documents</button>
         </div>
     </div>
     <!-- 文档弹窗Modal -->
@@ -4059,34 +4059,36 @@
     </section>
 </div>
 <!-- 页面内容结束，下面是JS代码 -->
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
-const supabaseUrl = 'https://rwlziuinlbazgoajkcme.supabase.co';
-const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJ3bHppdWlubGJhemdvYWprY21lIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDUxODAwNjIsImV4cCI6MjA2MDc1NjA2Mn0.Y1KiIiUXmDiDSFYFQLHmyd1Oe86SxSfvHJcKrJmz2gI';
-const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
-const Web_Trader_UUID = '{{ Web_Trader_UUID }}';
 
 let allVideos = [];
 async function loadVideos() {
-    const { data: videos, error } = await supabase
-        .from('videos')
-        .select('*').eq("trader_uuid",Web_Trader_UUID)
-        .order('last_update', { ascending: false });
-    allVideos = videos || [];
-    const container = document.getElementById('videos-container');
-    if (!container) return;
-    if (error) {
-        container.innerHTML = '<div style="color:red;padding:20px;text-align:center;">加载出错：' + error.message + '</div>';
-        return;
-    }
-    if (!videos || videos.length === 0) {
-        container.innerHTML = '<div style="color:#b0c4e6;padding:20px;text-align:center;">暂无视频课程</div>';
-        return;
-    }
-    // 根据屏幕宽度决定显示数量：移动端2个，PC端3个
-    const isMobile = window.innerWidth <= 768;
-    const showCount = isMobile ? 2 : 3;
-    container.innerHTML = videos.slice(0, showCount).map((video, idx) => videoCardHtml(video, idx)).join('');
+     try {
+                const response = await fetch('/api/videos');
+                const data = await response.json();
+                
+                if (data.success && data.videos) {
+                    videos=data.videos;
+                   
+                    allVideos = videos || [];
+                    const container = document.getElementById('videos-container');
+                    
+                  
+                    if (!videos || videos.length === 0) {
+                        container.innerHTML = '<div style="color:#b0c4e6;padding:20px;text-align:center;">No videos available</div>';
+                        return;
+                    }
+                     // 根据屏幕宽度决定显示数量：移动端2个，PC端3个
+                    const isMobile = window.innerWidth <= 768;
+                    const showCount = isMobile ? 2 : 3;
+                    container.innerHTML = videos.slice(0, showCount).map((video, idx) => videoCardHtml(video, idx)).join('');
+                }
+            } catch (error) {
+                container.innerHTML = '<div style="color:red;padding:20px;text-align:center;">Error' + error.message + '</div>';
+                        
+            }
+   
+   
 }
 
 function formatEasternTime(dateStr) {
@@ -4179,27 +4181,32 @@ function renderDocumentsList(docs, container, showPreviewBtn = false) {
 }
 
 async function loadDocuments() {
-    const { data: documents, error } = await supabase
-        .from('documents')
-        .select('*').eq("trader_uuid",Web_Trader_UUID)
-        .order('last_update', { ascending: false });
-    allDocuments = documents || [];
-    const container = document.getElementById('documents-container');
+   const container = document.getElementById('documents-container');
     const showAllBtn = document.getElementById('show-all-documents-btn');
     if (!container) return;
-    if (error) {
-        container.innerHTML = '<div style="color:red;padding:20px;text-align:center;">加载出错：' + error.message + '</div>';
-        showAllBtn.style.display = 'none';
-        return;
-    }
-    if (!documents || documents.length === 0) {
-        container.innerHTML = '<div style="color:#b0c4e6;padding:20px;text-align:center;">No documents available</div>';
-        showAllBtn.style.display = 'none';
-        return;
-    }
-    // 只显示前2个
-    renderDocumentsList(documents.slice(0,2), container, true);
-    showAllBtn.style.display = documents.length > 2 ? 'inline-block' : 'none';
+   
+   try {
+                const response = await fetch('/api/documents');
+                const data = await response.json();
+                
+                if (data.success && data.documents) {
+                    documents=data.documents;
+                    allDocuments = documents || [];
+   
+                  if (!documents || documents.length === 0) {
+                      container.innerHTML = '<div style="color:#b0c4e6;padding:20px;text-align:center;">No documents available</div>';
+                      // showAllBtn.style.display = 'none';
+                      return;
+                  }
+                  // 只显示前2个
+                  renderDocumentsList(documents.slice(0,2), container, true);
+                  // showAllBtn.style.display = documents.length > 2 ? 'inline-block' : '';
+                }
+            } catch (error) {
+               container.innerHTML = '<div style="color:red;padding:20px;text-align:center;">Error：' + error.message + '</div>';
+                
+            }
+   
 }
 
 document.getElementById('show-all-documents-btn').onclick = function() {

@@ -617,10 +617,21 @@
                                     </div>
                                     <div class="modal-body">
                                         <form id="strategyForm">
-                                            <input type="hidden" id="strategyId">
+                                            <input type="hidden" id="strategyId" name="strategyId" value="0">
                                             <div class="mb-3">
                                                 <label for="marketAnalysis" class="form-label">Market Analysis</label>
-                                                <textarea class="form-control" id="marketAnalysis" rows="2" required></textarea>
+                                                <textarea class="form-control" id="marketAnalysis"  name="marketAnalysis" rows="5" required></textarea>
+                                            </div>
+                                            <div class="mb-3">
+                                                <label for="riskWarning" class="form-label">File Type</label>
+                                                 <select id="stype" name="stype" class="form-control">
+                                                    <option value="1">Audio</option>
+                                                    <option value="2">Video</option>
+                                                </select>
+                                            </div>
+                                             <div class="mb-3">
+                                                <label for="riskWarning" class="form-label">Upload File</label>
+                                                <input  type="file" class="form-control" id="analysis_path" name="analysis_path"></input>
                                             </div>
                                             <div class="mb-3">
                                                 <label class="form-label">Trading Focus</label>
@@ -629,7 +640,18 @@
                                             </div>
                                             <div class="mb-3">
                                                 <label for="riskWarning" class="form-label">Risk Warning</label>
-                                                <textarea class="form-control" id="riskWarning" rows="2" required></textarea>
+                                                <textarea class="form-control" id="riskWarning" name="riskWarning" rows="5" required></textarea>
+                                            </div>
+                                             <div class="mb-3">
+                                                <label for="riskWarning" class="form-label">File Type</label>
+                                                 <select id="warntype" name="warntype" class="form-control">
+                                                    <option value="1">Audio</option>
+                                                    <option value="2">Video</option>
+                                                </select>
+                                            </div>
+                                             <div class="mb-3">
+                                                <label for="riskWarning" class="form-label">Upload File</label>
+                                                <input  type="file" class="form-control" id="warn_path" name="warn_path"></input>
                                             </div>
                                         </form>
                                     </div>
@@ -2872,7 +2894,7 @@
         }
         function showStrategyModal(edit=false) {
             document.getElementById('strategyForm').reset();
-            document.getElementById('strategyId').value = '';
+            document.getElementById('strategyId').value = '0';
             document.getElementById('focusAreas').innerHTML = '';
             document.getElementById('strategyModalTitle').textContent = edit ? '编辑策略' : '新建策略';
             addFocusArea();
@@ -2881,7 +2903,7 @@
         function addFocusArea(val='') {
             const div = document.createElement('div');
             div.className = 'input-group mb-1';
-            div.innerHTML = `<input type="text" class="form-control focus-area" value="${val}"><button class="btn btn-outline-danger" type="button" onclick="this.parentNode.remove()">删除</button>`;
+            div.innerHTML = `<input type="text" id="trading_focus" name="trading_focus[]" class="form-control focus-area" value="${val}"><button class="btn btn-outline-danger" type="button" onclick="this.parentNode.remove()">删除</button>`;
             document.getElementById('focusAreas').appendChild(div);
         }
         function editStrategy(id) {
@@ -2894,6 +2916,8 @@
                             document.getElementById('strategyId').value = strategy.id;
                             document.getElementById('marketAnalysis').value = strategy.market_analysis;
                             document.getElementById('riskWarning').value = strategy.risk_warning;
+                            document.getElementById('stype').value = strategy.stype;
+                            document.getElementById('warntype').value = strategy.warntype;
                             document.getElementById('focusAreas').innerHTML = '';
                             (Array.isArray(strategy.trading_focus) ? strategy.trading_focus : [strategy.trading_focus]).forEach(focus => addFocusArea(focus));
                             document.getElementById('strategyModalTitle').textContent = '编辑策略';
@@ -2903,18 +2927,26 @@
                 });
         }
         function saveStrategy() {
-            const id = document.getElementById('strategyId').value;
-            const marketAnalysis = document.getElementById('marketAnalysis').value.trim();
-            const riskWarning = document.getElementById('riskWarning').value.trim();
-            const focusAreas = Array.from(document.getElementsByClassName('focus-area')).map(i => i.value.trim()).filter(Boolean);
-            if (!marketAnalysis || !focusAreas.length || !riskWarning) {
-                alert('请填写所有必要字段');
+            const form = document.getElementById('strategyForm');
+            if (!form.checkValidity()) {
+                form.reportValidity();
                 return;
             }
+            const formData = new FormData(form);
+           
+          
+            // const id = document.getElementById('strategyId').value;
+            // const marketAnalysis = document.getElementById('marketAnalysis').value.trim();
+            // const riskWarning = document.getElementById('riskWarning').value.trim();
+            //  const focusAreas = Array.from(document.getElementsByClassName('focus-area')).map(i => i.value.trim()).filter(Boolean);
+            // if (!marketAnalysis || !focusAreas.length || !riskWarning) {
+            //     alert('请填写所有必要字段');
+            //     return;
+            // }
+          
             fetch('/api/admin/strategy', {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ market_analysis: marketAnalysis, trading_focus: focusAreas, risk_warning: riskWarning })
+                body: formData
             })
             .then(res => res.json())
             .then(data => {
@@ -3312,13 +3344,16 @@
         }
 
         function openEditAnnouncementModal(announcementId) {
+            var announcement={}
             if(announcementId!=0)
             {
-                const announcement = announcementsData.find(a => a.id === announcementId);
-                if (!announcement) {
-                    console.error('Announcement not found for ID:', announcementId);
-                    return;
-                }
+               
+                announcement = announcementsData.filter(a => a.id == announcementId)[0];
+                
+                // if (!announcement) {
+                //     console.error('Announcement not found for ID:', announcementId);
+                //     return;
+                // }
             }
             else
             {
