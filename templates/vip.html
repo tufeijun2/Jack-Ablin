@@ -1060,14 +1060,14 @@
                             <div class="current-level">
                                 <i class="bi bi-star-fill"></i>
                                 <h4 class="text-white mb-0" style="font-size: 1rem;">Current Level</h4>
-                                <p class="text-gold mb-0">{{ display_level }}</p>
+                                <p class="text-gold mb-0">{{ nowlevelInfo.currlevelname }}</p>
                             </div>
                         </div>
                         <div class="col-md-6">
                             <div class="progress-bar-wrapper">
                                 <div class="progress">
                                     {% set current_target = 1000000 %}
-                                    {% set progress = ((dynamic_total_asset / current_target * 100)|round(1) if current_target > 0 else 0) %}
+                                    {% set progress = ((dynamic_total_asset / nowlevelInfo.nextmoney * 100)|round(1) if nowlevelInfo.nextmoney > 0 else 0) %}
                                     <div class="progress-bar" role="progressbar" 
                                         style="width: {{ progress }}%;" 
                                         aria-valuenow="{{ dynamic_total_asset }}" 
@@ -1077,8 +1077,8 @@
                                     </div>
                                 </div>
                                 <div class="progress-labels d-flex justify-content-between">
-                                    <span>$ {{ '{:,.0f}'.format(dynamic_total_asset) }} / ${{ '{:,.0f}'.format(current_target) }}</span>
-                                    <span class="text-gold">Next Level: Supreme Black Card</span>
+                                    <span>$ {{ '{:,.0f}'.format(dynamic_total_asset) }} / ${{ '{:,.0f}'.format(nowlevelInfo.nextmoney) }}</span>
+                                    <span class="text-gold">Next Level: {{ nowlevelInfo.nextname }}</span>
                                 </div>
                             </div>
                         </div>
@@ -1086,7 +1086,7 @@
                             <div class="next-milestone">
                                 <i class="bi bi-crown-fill"></i>
                                 <h4 class="text-white mb-0" style="font-size: 1rem;">Next Level</h4>
-                                <p class="text-gold mb-0">Supreme Black Card</p>
+                                <p class="text-gold mb-0"> {{ nowlevelInfo.nextname }}</p>
                             </div>
                         </div>
                     </div>
@@ -1097,26 +1097,30 @@
         <!-- Membership Cards Section -->
         <div class="membership-cards-container">
             <!-- Regular Member Card -->
+             {% for t in vipList %}
             <div class="membership-card-wrapper">
+              
                 <div class="membership-card text-center">
-                   
+                    {%if nowlevelInfo.currlevelname==t.name%}
+                    <span class="vip-badge">Current Popular</span>
+                    {%endif%}
                     <i class="bi bi-star-fill card-icon"></i>
-                    <h3 class="h3Height">{% if 'username' in session %}Regular Member{% else %}Regular Member{% endif %}</h3>
-                    <div class="card-requirement">Trading Volume < $50,000</div>
+                    <h3 class="h3Height">{{t.name}}</h3>
+                    <div class="card-requirement">>=${{t.min_trading_volume}}</div>
                     <ul class="feature-list">
-                        <li><i class="bi bi-check-circle-fill"></i> Basic Trading Tools</li>
-                        <li><i class="bi bi-check-circle-fill"></i> Standard Market Analysis</li>
-                        <li><i class="bi bi-check-circle-fill"></i> Community Access</li>
-                        <li><i class="bi bi-check-circle-fill"></i> Standard Support</li>
+                         {% for b in t.benefits %}
+                        <li><i class="bi bi-check-circle-fill"></i> {{b}}</li>
+                         {%endfor%}
                     </ul>
                     <div class="upgrade-info">
-                        <p>Increase trading volume to unlock more features</p>
+                        
                     </div>
                 </div>
             </div>
+            {%endfor%}
 
             <!-- Gold Member Card -->
-            <div class="membership-card-wrapper">
+            <!-- <div class="membership-card-wrapper">
                 <div class="membership-card premium text-center">
                     <span class="vip-badge">Current Popular</span>
                     <i class="bi bi-star-fill card-icon"></i>
@@ -1133,10 +1137,10 @@
                         <p>Keep trading to reach Diamond level</p>
                     </div>
                 </div>
-            </div>
+            </div> -->
 
             <!-- Diamond Member Card -->
-            <div class="membership-card-wrapper">
+            <!-- <div class="membership-card-wrapper">
                 <div class="membership-card diamond text-center">
                       <i class="bi bi-star-fill card-icon"></i> 
                     <h3 class="h3Height">{% if 'username' in session %}Diamond Member{% else %}Diamond Member{% endif %}</h3>
@@ -1152,10 +1156,10 @@
                         <p>Keep trading to reach Supreme level</p>
                     </div>
                 </div>
-            </div>
+            </div> -->
 
             <!-- Supreme Black Card Member -->
-            <div class="membership-card-wrapper">
+            <!-- <div class="membership-card-wrapper">
                 <div class="membership-card supreme text-center">
                     <span class="vip-badge" style="background: linear-gradient(90deg, #000 0%, #333 100%);">SUPREME</span>
                     <i class="bi bi-credit-card-fill card-icon"></i>
@@ -1173,7 +1177,7 @@
                         <p>Enjoy Supreme Trading Privileges</p>
                     </div>
                 </div>
-            </div>
+            </div> -->
         </div>
     </div>
 

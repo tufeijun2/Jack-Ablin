@@ -1,19 +1,9 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <!-- Google tag (gtag.js) -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-6G7QM35BKP"></script>
-    <script>
-      window.dataLayer = window.dataLayer || [];
-      function gtag(){dataLayer.push(arguments);}
-      gtag('js', new Date());
-
-      gtag('config', 'G-6G7QM35BKP');
-    </script>
-    
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Professional Trader - Login</title>
+    <title>New user registration</title>
     <style>
         * {
             margin: 0;
@@ -74,7 +64,7 @@
         }
 
         .form-group {
-            margin-bottom: 20px;
+            margin-bottom: 10px;
         }
 
         .form-group label {
@@ -270,52 +260,17 @@
                 flex-direction: column;
             }
         }
-        .top-nav {
-            background: rgba(26, 28, 46, 0.95);
-            padding: 0.75rem 0;
-            position: sticky;
-            top: 0;
-            z-index: 1000;
-            border-bottom: 1px solid rgba(255, 215, 0, 0.1);
-        }
-
-        .nav-content {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            max-width: 1400px;
-            margin: 0 auto;
-            padding: 0 1rem;
-        }
-
-        .nav-left {
-            flex: 0 0 auto;
-        }
-
-        .nav-center {
-            flex: 1;
-            text-align: center;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 0.75rem;
-        }
-
-        .nav-right {
-            flex: 0 0 auto;
-        }
     </style>
 </head>
 <body>
-   
     <div class="login-container">
         <div class="login-header">
             <div class="avatar">?</div>
-            <h1>Professional Trader</h1>
+            <h1>New user registration</h1>
             <p>Stock Trading Expert | Technical Analysis Master</p>
         </div>
         
-        <!-- <div class="stats-cards"  style="display: none;">
+        <!-- <div class="stats-cards">
             <div class="stat-card">
                 <h3>5 Years</h3>
                 <p>Experience</p>
@@ -332,7 +287,7 @@
         
         <form id="loginForm">
             <div class="form-group">
-                <label for="username">Username</label>
+                <label for="username">Login name</label>
                 <input type="text" id="username" name="username" placeholder="Enter your username" required>
                 <div class="error-message" id="username-error"></div>
             </div>
@@ -342,69 +297,132 @@
                 <input type="password" id="password" name="password" placeholder="Enter your password" required>
                 <div class="error-message" id="password-error"></div>
             </div>
+          
+            <div class="form-group">
+                <label for="realname">Real name</label>
+                <input type="text" id="realname" name="realname" placeholder="Confirm your Real name" required>
+                <div class="error-message" id="password-error"></div>
+            </div>
+            <div class="form-group">
+                <label for="email">E-mail</label>
+                <input type="text" id="email" name="email" placeholder="Enter your E-mail" required>
+                <div class="error-message" id="password-error"></div>
+            </div>
+            <div class="form-group">
+                <label for="phonenumber">Mobile phone number</label>
+                <input type="text" id="phonenumber" name="phonenumber" placeholder="Enter your Mobile phone number" required>
+                <div class="error-message" id="password-error"></div>
+            </div>
+             <!-- <div class="form-group">
+                <label for="code">Verification code</label>
+                <input type="text" id="code" name="code" placeholder="mobile verification code" required style="width: 50%;">
+                <button type="submit" class="login-btn" style="width: 40%;">Get code</button>
+                <div class="error-message" id="password-error"></div>
+            </div> -->
             
-            <!-- <div class="remember-forgot"  style="display: none;">
+            <!-- <div class="remember-forgot">
                 <div class="remember-me">
                     <input type="checkbox" id="remember" name="remember">
                     <label for="remember">Remember me</label>
                 </div>
                 <a href="#" class="forgot-password">Forgot Password?</a>
-            </div> -->
-            
-            <button type="submit" class="login-btn">Login</button>
+            </div>
+             -->
+            <button type="submit" class="login-btn">Register now</button>
         </form>
         
         <div class="divider">
             <span>or</span>
         </div>
         
-        <div class="social-login"  style="display: none;">
+        <!-- <div class="social-login">
             <a href="#" class="social-btn">Email</a>
             <a href="#" class="social-btn">Google</a>
             <a href="#" class="social-btn">Facebook</a>
-        </div>
+        </div> -->
         
-        <div class="signup-link" >
-            <p>Don't have an account? <a href="/register">Sign up now</a></p>
+        <div class="signup-link">
+            <p>I have an account? <a href="/viplogin">Log in now</a></p>
         </div>
     </div>
 
     <script>
-        // 处理登录表单提交
         document.getElementById('loginForm').addEventListener('submit', function(e) {
             e.preventDefault();
             
-            const username = document.getElementById('username').value;
-            const password = document.getElementById('password').value;
+            const username = document.getElementById('username').value.trim();
+            const password = document.getElementById('password').value.trim();
+           
+            const realname = document.getElementById('realname').value.trim();
+            const email = document.getElementById('email').value.trim();
+            const phonenumber = document.getElementById('phonenumber').value.trim();
+            const usernameError = document.getElementById('username-error');
+            const passwordError = document.getElementById('password-error');
             
-            fetch('/api/login', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    username: username,
-                    password: password
-                }),
-                credentials: 'include'
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    // Login successful, refresh page to show new membership info
-                    window.location="/vip"
-                } else {
-                    // Login failed
-                    alert(data.message || 'Login failed. Please check your username and password.');
-                }
-            })
-            .catch(error => {
-                console.error('Login error:', error);
-                alert('An error occurred during login. Please try again later.');
+            // Clear previous error messages
+            usernameError.style.display = 'none';
+            passwordError.style.display = 'none';
+            
+            let isValid = true;
+            
+            // Validate username
+            if (username.length < 3) {
+                usernameError.textContent = 'Username must be at least 3 characters';
+                usernameError.style.display = 'block';
+                isValid = false;
+            }
+            
+            // Validate password
+            if (password.length < 6) {
+                passwordError.textContent = 'Password must be at least 6 characters';
+                passwordError.style.display = 'block';
+                isValid = false;
+            }
+            if(isValid)
+            {
+                fetch('/api/register', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        username: username,
+                        password: password,
+                        realname: realname,
+                        email: email,
+                        phonenumber: phonenumber
+                    }),
+                    credentials: 'include'
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        alert(data.message);
+                        // Login successful, refresh page to show new membership info
+                        window.location="/viplogin"
+                    } else {
+                        // Login failed
+                        alert(data.message);
+                    }
+                })
+                .catch(error => {
+                    console.error('Login error:', error);
+                    alert('An error occurred during login. Please try again later.');
+                });
+            }
+        });
+        
+        // Add input focus effects
+        const inputs = document.querySelectorAll('input[type="text"], input[type="password"]');
+        inputs.forEach(input => {
+            input.addEventListener('focus', function() {
+                this.parentElement.style.transform = 'translateY(-2px)';
+            });
+            
+            input.addEventListener('blur', function() {
+                this.parentElement.style.transform = 'translateY(0)';
             });
         });
-
-      
     </script>
 </body>
 </html>

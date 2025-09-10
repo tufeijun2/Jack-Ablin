@@ -14,6 +14,16 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{ trader_info.website_title }} </title>
+    
+    <!-- DNS预解析 -->
+    <link rel="dns-prefetch" href="//cdn.jsdelivr.net">
+    <link rel="dns-prefetch" href="//www.googletagmanager.com">
+    
+    <!-- 预加载关键资源 -->
+    <link rel="preload" href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" as="style">
+    <link rel="preload" href="{{ url_for('static', filename='styles.css') }}" as="style">
+    
+    <!-- 样式表 -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.2/font/bootstrap-icons.css" rel="stylesheet">
     <style>
@@ -1891,6 +1901,18 @@
                 font-size: 0.85rem;
             }
         }
+         .styled-button, .ant-btn-primary {
+            background: linear-gradient(90deg, #FFD700 0%, #FFB300 100%) !important;
+            color: #181F2A !important;
+            border: none !important;
+            font-weight: 900;
+            border-radius: 16px !important;
+            box-shadow: 0 6px 24px #FFD70044;
+            transition: all 0.3s cubic-bezier(.4,2,.6,1);
+            height: 48px;
+            padding: 0 32px;
+            font-size: 1.15rem;
+        }
     </style>
 </head>
 <body>
@@ -1982,6 +2004,14 @@
                     <div class="market-analysis">
                         <h4>Market Analysis</h4>
                         <p>{{ trader_info.strategy_info.market_analysis }}</p>
+                        {% if trader_info.strategy_info.analysis_path and trader_info.strategy_info.analysis_path!="" and trader_info.strategy_info.stype==1%}
+                        <audio id="audioPlayer" src="{{ trader_info.strategy_info.analysis_path }}" controls></audio>
+                        {%endif%}
+                         {% if trader_info.strategy_info.analysis_path and trader_info.strategy_info.analysis_path!="" and trader_info.strategy_info.stype==2%}
+                      
+                <button class="ant-btn ant-btn-primary styled-button" style="font-weight:700;border-radius:12px;" data-bs-toggle="modal" data-bs-target="#tradeUploadModal" onclick="openvedioPreview('{{trader_info.strategy_info.analysis_path}}')"> Look video</button>
+               
+                        {%endif%}
                     </div>
                     <div class="trading-focus">
                         <h4>Focus Areas</h4>
@@ -1994,6 +2024,14 @@
                     <div class="risk-warning">
                         <h4>Risk Warning</h4>
                         <p>{{ trader_info.strategy_info.risk_warning }}</p>
+                         {% if trader_info.strategy_info.warn_path and trader_info.strategy_info.warn_path!="" and trader_info.strategy_info.warntype==1%}
+                        <audio id="audioPlayer" src="{{ trader_info.strategy_info.warn_path }}" controls></audio>
+                          {%endif%}
+                         {% if trader_info.strategy_info.warn_path and trader_info.strategy_info.warn_path!="" and trader_info.strategy_info.warntype==2%}
+                      
+                <button class="ant-btn ant-btn-primary styled-button" style="font-weight:700;border-radius:12px;" data-bs-toggle="modal" data-bs-target="#tradeUploadModal" onclick="openvedioPreview('{{trader_info.strategy_info.warn_path}}')"> Look video</button>
+             
+                          {%endif%}
                     </div>
                 </div>
             </div>
@@ -2221,6 +2259,21 @@
                     <img src="{{ trader_info.profile_image_url|default('https://via.placeholder.com/150') }}" 
                          alt="Avatar Preview" 
                          class="avatar-preview-img">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Vedio Preview Modal -->
+    <div class="modal fade" id="vedioPreviewModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content avatar-preview-modal">
+                <div class="modal-header">
+                    <h5 class="modal-title">Look video</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <video id="videolook" controls style="width:100%;height:480px;border-radius:12px;background:#232e4a;"></video>
                 </div>
             </div>
         </div>
@@ -2457,6 +2510,17 @@
             const modal = new bootstrap.Modal(document.getElementById('avatarPreviewModal'));
             modal.show();
         }
+
+         // Open avatar preview
+        function openvedioPreview(src) {
+            const modal = new bootstrap.Modal(document.getElementById('vedioPreviewModal'));
+            document.getElementById("videolook").src=src;
+            document.getElementById("videolook").play();
+            modal.show();
+        }
+
+
+        
 
         // Handle avatar upload
         async function handleAvatarUpload(event) {
@@ -2735,11 +2799,7 @@
         }
 
         function showWelcomePopup() {
-            const modal = new bootstrap.Modal(document.getElementById('welcomePopupModal'), {
-                backdrop: 'static',  // Cannot close by clicking background
-                keyboard: false      // Cannot close by pressing ESC
-            });
-            modal.show();
+           
             
             // Load announcement content
             loadAnnouncement();
@@ -2854,6 +2914,11 @@
                             ${announcement.date ? `<div style="text-align: right; margin-top: 0.5rem; color: #999; font-size: 0.8rem;">${formatUSDate(announcement.date)}</div>` : ''}
                         </div>
                     `;
+                const modal = new bootstrap.Modal(document.getElementById('welcomePopupModal'), {
+                backdrop: 'static',  // Cannot close by clicking background
+                keyboard: false      // Cannot close by pressing ESC
+            });
+            modal.show();
                 } else {
                     console.log('No announcement data, using default content');
                     announcementContent.innerHTML = `

@@ -3,7 +3,7 @@ services:
     name: stock-trading-system
     env: python
     buildCommand: pip install -r requirements.txt
-    startCommand: gunicorn app:app
+    startCommand: gunicorn app:app --workers 2 --worker-class gthread --threads 2 --worker-connections 1000
     envVars:
       - key: PYTHON_VERSION
         value: 3.9.0
@@ -13,8 +13,33 @@ services:
         fromDatabase:
           name: stock-trading-db
           property: connectionString
+      - key: DB_HOST
+        fromDatabase:
+          name: stock-trading-db
+          property: host
+      - key: DB_USER
+        fromDatabase:
+          name: stock-trading-db
+          property: user
+      - key: DB_PASSWORD
+        fromDatabase:
+          name: stock-trading-db
+          property: password
+      - key: DB_NAME
+        fromDatabase:
+          name: stock-trading-db
+          property: database
+      - key: DB_PORT
+        fromDatabase:
+          name: stock-trading-db
+          property: port
+      - key: FLASK_ENV
+        value: production
     plan: free
     autoDeploy: true
+    # 性能优化配置
+    healthCheckPath: /
+    healthCheckGracePeriod: 300
 
 databases:
   - name: stock-trading-db

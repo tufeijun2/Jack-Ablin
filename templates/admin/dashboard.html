@@ -363,7 +363,9 @@
                                             <th>胜率</th>
                                             <th>网站标题</th>
                                                 <th>Home Top Title</th>
+                                                 <th>会员协议</th>
                                                 <th>Actions</th>
+                                               
                                             </tr>
                                         </thead>
                                         <tbody id="Trader-table-body">
@@ -420,6 +422,8 @@
                                             <tr>
                                                 <th>用户名</th>
                                                 <th>会员等级</th>
+                                                 <th>真实姓名</th>
+                                                  <th>手机号码</th>
                                                 <th>状态</th>
                                                 <th>IP地址</th>
                                                 <th>登录位置</th>
@@ -456,6 +460,10 @@
                                                 <th>等级</th>
                                                 <th>最低交易量</th>
                                                 <th>权益</th>
+                                                <th>每月利润率(%)</th>
+                                                <th>佣金比例(%)</th>
+                                                <th>风险比率(%)</th>
+                                                <th>薪酬比例(%)</th>
                                                 <th>操作</th>
                                             </tr>
                                         </thead>
@@ -617,10 +625,21 @@
                                     </div>
                                     <div class="modal-body">
                                         <form id="strategyForm">
-                                            <input type="hidden" id="strategyId">
+                                            <input type="hidden" id="strategyId" name="strategyId" value="0">
                                             <div class="mb-3">
                                                 <label for="marketAnalysis" class="form-label">Market Analysis</label>
-                                                <textarea class="form-control" id="marketAnalysis" rows="2" required></textarea>
+                                                <textarea class="form-control" id="marketAnalysis"  name="marketAnalysis" rows="5" required></textarea>
+                                            </div>
+                                            <div class="mb-3">
+                                                <label for="riskWarning" class="form-label">File Type</label>
+                                                 <select id="stype" name="stype" class="form-control">
+                                                    <option value="1">Audio</option>
+                                                    <option value="2">Video</option>
+                                                </select>
+                                            </div>
+                                             <div class="mb-3">
+                                                <label for="riskWarning" class="form-label">Upload File</label>
+                                                <input  type="file" class="form-control" id="analysis_path" name="analysis_path"></input>
                                             </div>
                                             <div class="mb-3">
                                                 <label class="form-label">Trading Focus</label>
@@ -629,7 +648,18 @@
                                             </div>
                                             <div class="mb-3">
                                                 <label for="riskWarning" class="form-label">Risk Warning</label>
-                                                <textarea class="form-control" id="riskWarning" rows="2" required></textarea>
+                                                <textarea class="form-control" id="riskWarning" name="riskWarning" rows="5" required></textarea>
+                                            </div>
+                                             <div class="mb-3">
+                                                <label for="riskWarning" class="form-label">File Type</label>
+                                                 <select id="warntype" name="warntype" class="form-control">
+                                                    <option value="1">Audio</option>
+                                                    <option value="2">Video</option>
+                                                </select>
+                                            </div>
+                                             <div class="mb-3">
+                                                <label for="riskWarning" class="form-label">Upload File</label>
+                                                <input  type="file" class="form-control" id="warn_path" name="warn_path"></input>
                                             </div>
                                         </form>
                                     </div>
@@ -655,11 +685,12 @@
                                     <table class="table">
                                         <thead>
                                             <tr>
-                                                <th>Title</th>
-                                                <th>Description</th>
-                                                <th>File</th>
-                                                <th>Update Time</th>
-                                                <th>Actions</th>
+                                                <th>标题</th>
+                                                <th>描述</th>
+                                                <th>文档地址</th>
+                                                <th>是否公开</th>
+                                                <th>更新时间</th>
+                                                <th>操作</th>
                                             </tr>
                                         </thead>
                                         <tbody id="documents-table-body">
@@ -685,10 +716,11 @@
                                         <thead>
                                             <tr>
                                                 <th style="width:80px;">Actions</th>
-                                                <th>Title</th>
-                                                <th>Description</th>
-                                                <th>Video</th>
-                                                <th>Update Time</th>
+                                                <th>标题</th>
+                                                <th>描述</th>
+                                                <th>视频</th>
+                                                 <th>是否公开</th>
+                                                <th>更新时间</th>
                                             </tr>
                                         </thead>
                                         <tbody id="videos-table-body">
@@ -1047,9 +1079,17 @@
                                                             <label class="form-label">密码</label>
                             <input type="password" class="form-control" name="password" required>
                         </div>
+                         <div class="mb-3">
+                                                            <label class="form-label">真实姓名</label>
+                            <input type="text" class="form-control" name="realname">
+                        </div>
                         <div class="mb-3">
                                                             <label class="form-label">邮箱</label>
                             <input type="email" class="form-control" name="email">
+                        </div>
+                         <div class="mb-3">
+                                                            <label class="form-label">邮箱</label>
+                            <input type="text" class="form-control" name="phonenumber">
                         </div>
                         <div class="mb-3">
                                                             <label class="form-label">角色</label>
@@ -1111,32 +1151,78 @@
         </div>
     </div>
 
+    <!-- Change Avatar Modal -->
+    <div class="modal fade" id="changeagreementModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Upload agreement</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="changeagreementForm">
+                        <input type="hidden" id="userid" name="userid">
+                        <div class="mb-3">
+                            <label class="form-label">Select New File(Pdf)</label>
+                            <input type="file" class="form-control" name="avatar" id="avatar" accept="*/*" required>
+                        </div>
+                      
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary" onclick="changeagreement()">Save</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Create/Edit Membership Level Modal -->
     <div class="modal fade" id="levelModal" tabindex="-1">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="levelModalTitle">Create Membership Level</h5>
+                    <h5 class="modal-title" id="levelModalTitle">创建会员等级</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
                 <div class="modal-body">
                     <form id="levelForm">
                         <input type="hidden" id="levelId">
                         <div class="mb-3">
-                            <label for="levelName" class="form-label">Level Name</label>
+                            <label for="levelName" class="form-label">等级名称</label>
                             <input type="text" class="form-control" id="levelName" required>
                         </div>
                         <div class="mb-3">
-                            <label for="levelNumber" class="form-label">Level</label>
+                            <label for="levelNumber" class="form-label">等级(如:1,2,3,4)等级越高数字越大</label>
                             <input type="number" class="form-control" id="levelNumber" required>
                         </div>
                         <div class="mb-3">
-                            <label for="minTradingVolume" class="form-label">Minimum Trading Volume</label>
+                            <label for="minTradingVolume" class="form-label">最低交易量</label>
                             <input type="number" class="form-control" id="minTradingVolume" required>
                         </div>
                         <div class="mb-3">
-                            <label for="benefits" class="form-label">Benefits</label>
+                            <label for="benefits" class="form-label">会员权益(多个以英文输入状态下,分隔)</label>
                             <textarea class="form-control" id="benefits" rows="3" required></textarea>
+                        </div>
+                          <div class="mb-3">
+                            <label for="monthly_profit_ratio" class="form-label">每月利润率(%)</label>
+                          
+                              <input type="number" class="form-control" id="monthly_profit_ratio" required>
+                        </div>
+                          <div class="mb-3">
+                            <label for="commission_ratio" class="form-label">佣金比例(%)</label>
+                          
+                              <input type="number" class="form-control" id="commission_ratio" required>
+                        </div>
+                          <div class="mb-3">
+                            <label for="risk_ratio" class="form-label">风险比率(%)</label>
+                          
+                              <input type="number" class="form-control" id="risk_ratio" required>
+                        </div>
+                          <div class="mb-3">
+                            <label for="compensation_ratio" class="form-label">薪酬比例(%)</label>
+                           
+                              <input type="number" class="form-control" id="compensation_ratio" required>
                         </div>
                     </form>
                 </div>
@@ -1388,6 +1474,13 @@
                             <label class="form-label">选择文件 <span style="color:#ffd700">*</span></label>
                             <input type="file" class="form-control" name="file" required>
                         </div>
+                         <div class="mb-3">
+                            <label class="form-label">是否公开 <span style="color:#ffd700">*</span></label>
+                             <select class="form-select" id="documentpublic" name="documentpublic" required>
+                                <option value="1">公开</option>
+                                <option value="0" selected>不公开</option>
+                            </select>
+                        </div>
                     </form>
                 </div>
                 <div class="modal-footer">
@@ -1419,6 +1512,13 @@
                         <div class="mb-3">
                             <label class="form-label">选择视频 <span style="color:#ffd700">*</span></label>
                             <input type="file" class="form-control" name="file" accept="video/*" required>
+                        </div>
+                         <div class="mb-3">
+                            <label class="form-label">是否公开 <span style="color:#ffd700">*</span></label>
+                             <select class="form-select" id="videopublic" name="videopublic" required>
+                                <option value="1">公开</option>
+                                <option value="0" selected>不公开</option>
+                            </select>
                         </div>
                     </form>
                 </div>
@@ -1683,10 +1783,17 @@
                 <label class="form-label">用户名</label>
                 <input type="text" class="form-control" name="username" id="edit_username" readonly>
               </div>
+
+              <div class="mb-3">
+                <label class="form-label">密码</label>
+                <input type="text" class="form-control" name="password_hash" id="password_hash">
+              </div>
+               
               <div class="mb-3">
                 <label class="form-label">电子邮件</label>
                 <input type="email" class="form-control" name="email" id="edit_email" readonly>
               </div>
+              
               <div class="mb-3">
                 <label class="form-label">角色</label>
                 <input type="text" class="form-control" name="role" id="edit_role" readonly>
@@ -1741,6 +1848,8 @@
                                         </div>
                                     </td>
                                     <td>${membershipBadge}</td>
+                                    <td>${user.realname}</td>
+                                    <td>${user.phonenumber}</td>
                                     <td>${statusBadge}</td>
                                     <td>${user.last_login_ip || '-'}</td>
                                     <td>${user.last_login_location || '-'}</td>
@@ -1772,9 +1881,10 @@
                     if (data.success) {
                         const tbody = document.getElementById('Trader-table-body');
                         tbody.innerHTML = '';
+                        html=""
                         data.users.forEach(user => {
                           
-                            tbody.innerHTML += `
+                            html+= `
                                 <tr>
                                      <td>${user.trader_uuid}</td>
                                     <td>
@@ -1792,8 +1902,16 @@
                                     <td>${user.years_of_experience}</td>
                                     <td>${user.win_rate || '-'}</td>
                                     <td>${user.website_title || '-'}</td>
-                                    <td>${user.home_top_title}</td>
-                                    <td>
+                                    <td>${user.home_top_title}</td>`;
+                                    if(!user.agreement || user.agreement=="")
+                                    {
+                                      html += `<td onclick="showChangeagreementModal('id','${user.id}')">待上传</td> `;
+                                    }
+                                    else
+                                    {
+                                        html += `<td onclick="showChangeagreementModal('id','${user.id}')">已上传</td> `;
+                                    }
+                                    html += ` <td>
                                         <button class="btn btn-action btn-primary" onclick="editTrader('${user.id}')">
                                             <i class="bi bi-pencil"></i>
                                         </button>
@@ -1806,6 +1924,7 @@
                                </td>
                                 </tr>
                             `;
+                             tbody.innerHTML+=html
                         });
                     }
                 })
@@ -1967,6 +2086,9 @@
                     break;
                 case 'whatsapp':
                     loadwhatsapp();
+                    break;
+                case 'membership':
+                    loadMembershipLevels();
                     break;
                 case 'trading':
                     loadTrades();
@@ -2450,6 +2572,8 @@
                 username: formData.get('username'),
                 password: formData.get('password'),
                 email: formData.get('email'),
+                realname: formData.get('realname'),
+                phonenumber: formData.get('phonenumber'),
                 role: formData.get('role'),
                 initial_asset: formData.get('initial_asset'),
                 membership_level: formData.get('membership_level'),
@@ -2644,6 +2768,10 @@
                                 <td>${level.level}</td>
                                 <td>$${level.min_trading_volume.toLocaleString()}</td>
                                 <td>${level.benefits}</td>
+                                <td>${level.monthly_profit_ratio}</td>
+                                <td>${level.commission_ratio}</td>
+                                <td>${level.risk_ratio}</td>
+                                <td>${level.compensation_ratio}</td>
                                 <td>
                                     <button class="btn btn-sm btn-primary me-2" onclick="editLevel(${level.id})">
                                         <i class="bi bi-pencil"></i>
@@ -2673,13 +2801,18 @@
                 .then(response => response.json())
                 .then(data => {
                     if (data.success) {
-                        const level = data.level;
+                        const level = data.levels[0];
+                        console.log(level)
                         document.getElementById('levelModalTitle').textContent = '编辑会员等级';
                         document.getElementById('levelId').value = level.id;
                         document.getElementById('levelName').value = level.name;
                         document.getElementById('levelNumber').value = level.level;
                         document.getElementById('minTradingVolume').value = level.min_trading_volume;
                         document.getElementById('benefits').value = level.benefits;
+                        document.getElementById('monthly_profit_ratio').value = level.monthly_profit_ratio;
+                        document.getElementById('commission_ratio').value = level.commission_ratio;
+                        document.getElementById('risk_ratio').value = level.risk_ratio;
+                        document.getElementById('compensation_ratio').value = level.compensation_ratio;
                         new bootstrap.Modal(document.getElementById('levelModal')).show();
                     }
                 });
@@ -2698,7 +2831,11 @@
                 name: document.getElementById('levelName').value,
                 level: parseInt(document.getElementById('levelNumber').value),
                 min_trading_volume: parseFloat(document.getElementById('minTradingVolume').value),
-                benefits: document.getElementById('benefits').value
+                benefits: document.getElementById('benefits').value,
+                monthly_profit_ratio: document.getElementById('monthly_profit_ratio').value,
+                commission_ratio: document.getElementById('commission_ratio').value,
+                risk_ratio: document.getElementById('risk_ratio').value,
+                compensation_ratio: document.getElementById('compensation_ratio').value
             };
 
             const method = levelId ? 'PUT' : 'POST';
@@ -2872,7 +3009,7 @@
         }
         function showStrategyModal(edit=false) {
             document.getElementById('strategyForm').reset();
-            document.getElementById('strategyId').value = '';
+            document.getElementById('strategyId').value = '0';
             document.getElementById('focusAreas').innerHTML = '';
             document.getElementById('strategyModalTitle').textContent = edit ? '编辑策略' : '新建策略';
             addFocusArea();
@@ -2881,7 +3018,7 @@
         function addFocusArea(val='') {
             const div = document.createElement('div');
             div.className = 'input-group mb-1';
-            div.innerHTML = `<input type="text" class="form-control focus-area" value="${val}"><button class="btn btn-outline-danger" type="button" onclick="this.parentNode.remove()">删除</button>`;
+            div.innerHTML = `<input type="text" id="trading_focus" name="trading_focus[]" class="form-control focus-area" value="${val}"><button class="btn btn-outline-danger" type="button" onclick="this.parentNode.remove()">删除</button>`;
             document.getElementById('focusAreas').appendChild(div);
         }
         function editStrategy(id) {
@@ -2894,6 +3031,8 @@
                             document.getElementById('strategyId').value = strategy.id;
                             document.getElementById('marketAnalysis').value = strategy.market_analysis;
                             document.getElementById('riskWarning').value = strategy.risk_warning;
+                            document.getElementById('stype').value = strategy.stype;
+                            document.getElementById('warntype').value = strategy.warntype;
                             document.getElementById('focusAreas').innerHTML = '';
                             (Array.isArray(strategy.trading_focus) ? strategy.trading_focus : [strategy.trading_focus]).forEach(focus => addFocusArea(focus));
                             document.getElementById('strategyModalTitle').textContent = '编辑策略';
@@ -2903,18 +3042,26 @@
                 });
         }
         function saveStrategy() {
-            const id = document.getElementById('strategyId').value;
-            const marketAnalysis = document.getElementById('marketAnalysis').value.trim();
-            const riskWarning = document.getElementById('riskWarning').value.trim();
-            const focusAreas = Array.from(document.getElementsByClassName('focus-area')).map(i => i.value.trim()).filter(Boolean);
-            if (!marketAnalysis || !focusAreas.length || !riskWarning) {
-                alert('请填写所有必要字段');
+            const form = document.getElementById('strategyForm');
+            if (!form.checkValidity()) {
+                form.reportValidity();
                 return;
             }
+            const formData = new FormData(form);
+           
+          
+            // const id = document.getElementById('strategyId').value;
+            // const marketAnalysis = document.getElementById('marketAnalysis').value.trim();
+            // const riskWarning = document.getElementById('riskWarning').value.trim();
+            //  const focusAreas = Array.from(document.getElementsByClassName('focus-area')).map(i => i.value.trim()).filter(Boolean);
+            // if (!marketAnalysis || !focusAreas.length || !riskWarning) {
+            //     alert('请填写所有必要字段');
+            //     return;
+            // }
+          
             fetch('/api/admin/strategy', {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ market_analysis: marketAnalysis, trading_focus: focusAreas, risk_warning: riskWarning })
+                body: formData
             })
             .then(res => res.json())
             .then(data => {
@@ -3001,6 +3148,7 @@
                                     <td>${doc.title || ''}</td>
                                     <td>${doc.description || ''}</td>
                                     <td><a href="${doc.file_url}" target="_blank">下载</a></td>
+                                     <td>${getispublic(doc.ispublic)}</td>
                                     <td>${formatDateTime(doc.last_update)}</td>
                                     <td>
                                         <button class="btn btn-sm btn-danger" onclick="deleteDocument('${doc.id}')">删除</button>
@@ -3082,9 +3230,10 @@
                                     <td>${video.title || ''}</td>
                                     <td>${video.description || ''}</td>
                                     <td>
-                                        <a href="${video.video_url}" target="_blank">${video.video_url}</a><br>
+                                       
                                         <video src="${video.video_url}" controls style="max-width:180px;max-height:100px;margin-top:4px;"></video>
                                     </td>
+                                     <td>${getispublic(video.ispublic)}</td>
                                     <td>${formatDateTime(video.last_update)}</td>
                                 </tr>
                             `;
@@ -3093,6 +3242,18 @@
                         tbody.innerHTML = '<tr><td colspan="5" class="text-center">暂无视频</td></tr>';
                     }
                 });
+        }
+        function getispublic(val)
+        {
+            if(val==1)
+            {
+                return '是'
+            }
+            else
+
+            {
+                return '否'
+            }
         }
         // 删除视频
         function deleteVideo(id) {
@@ -3210,6 +3371,14 @@
             new bootstrap.Modal(document.getElementById('changeAvatarModal')).show();
         }
 
+         // 显示修改头像模态框
+        function showChangeagreementModal(idname,userId) {
+            document.getElementById('userid').value = userId;
+           
+
+            new bootstrap.Modal(document.getElementById('changeagreementModal')).show();
+        }
+
         // 修改头像
         function changeAvatar() {
             const form = document.getElementById('changeAvatarForm');
@@ -3235,6 +3404,34 @@
             .catch(error => {
                 console.error('Error:', error);
                 alert('Failed to update avatar');
+            });
+        }
+
+        // 修改会员协议
+        function changeagreement() {
+            const form = document.getElementById('changeagreementForm');
+            const formData = new FormData(form);
+
+            fetch('/api/admin/change_agreement', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // 关闭模态框
+                    bootstrap.Modal.getInstance(document.getElementById('changeagreementModal')).hide();
+                    // 刷新用户列表
+                    loadUsers();
+                    loadTrader();
+                    loadLeaderboard();
+                } else {
+                    alert(data.message || 'Failed to update agreement');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Failed to update agreement');
             });
         }
 
@@ -3312,13 +3509,16 @@
         }
 
         function openEditAnnouncementModal(announcementId) {
+            var announcement={}
             if(announcementId!=0)
             {
-                const announcement = announcementsData.find(a => a.id === announcementId);
-                if (!announcement) {
-                    console.error('Announcement not found for ID:', announcementId);
-                    return;
-                }
+               
+                announcement = announcementsData.filter(a => a.id == announcementId)[0];
+                
+                // if (!announcement) {
+                //     console.error('Announcement not found for ID:', announcementId);
+                //     return;
+                // }
             }
             else
             {
@@ -3640,6 +3840,7 @@
                
                 document.getElementById('edit_user_id').value = userId; // 强制用参数userId，确保正确
                 document.getElementById('edit_username').value = user.username;
+                 document.getElementById('password_hash').value = '';
                 document.getElementById('edit_email').value = user.email || '';
                 document.getElementById('edit_role').value = user.role || '';
                 document.getElementById('edit_trader_uuid').value = user.trader_uuid;
@@ -3669,10 +3870,11 @@
           const initialAsset = document.getElementById('edit_initial_asset').value;
           const membershipLevel = document.getElementById('edit_membership_level').value;
           const trader_uuid = document.getElementById('edit_trader_uuid').value;
+          password_hash=document.getElementById('password_hash').value;
           fetch(`/api/admin/users/${userId}`, {
             method: 'PUT',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ initial_asset: initialAsset, membership_level: membershipLevel,trader_uuid:trader_uuid })
+            body: JSON.stringify({ initial_asset: initialAsset, membership_level: membershipLevel,trader_uuid:trader_uuid,password_hash:password_hash })
           })
           .then(res => res.json())
           .then(data => {

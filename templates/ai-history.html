@@ -156,7 +156,7 @@
 
         .tool-content {
             display: grid;
-            grid-template-columns: 1fr 1fr;
+            grid-template-columns: 1fr;
             gap: 2rem;
             margin-top: 1.5rem;
         }
@@ -221,6 +221,7 @@
             border-radius: 12px;
             padding: 1.5rem;
             min-height: 200px;
+            width: 100%;
         }
 
         .results-section h4 {
@@ -230,7 +231,7 @@
         }
 
         .loading-spinner {
-            display: none;
+           
             text-align: center;
             padding: 2rem;
         }
@@ -537,7 +538,7 @@
     <!-- AI Header -->
     <div class="ai-header">
         <div class="container">
-            <h1><i class="bi bi-robot"></i> AI Trading Tools</h1>
+            <h1><i class="bi bi-robot"></i> <a href="/ai-tools" style="color: #ffffff; text-decoration: none;">AI Trading Tools</a></h1>
             <p>Advanced AI-powered stock analysis and selection tools</p>
         </div>
     </div>
@@ -550,146 +551,29 @@
                     <i class="bi bi-stars"></i>
                 </div>
                 <div class="tool-title">
-                    <h3>AI Smart Stock Picker</h3>
+                    <h3>AI recommendation history</h3>
                     <p>Intelligent stock selection based on market data, technical analysis, and AI algorithms</p>
                 </div>
-                 <div >
+                <div >
                     
-                    <a href="/aihistory" style="color: #ffffff;">Ai history data</a>
+                    <a href="/ai-tools" style="color: #ffffff;">Ai Tools</a>
                 </div>
             </div>
             
             <div class="tool-content">
-                <div class="input-section">
-                    <h4><i class="bi bi-sliders"></i> Selection Criteria</h4>
-                    
-                    <label class="form-label">Market Sector</label>
-                    <select class="form-select" id="sectorSelect">
-                        <option value="">All Sectors</option>
-                        <option value="technology">Technology</option>
-                        <option value="healthcare">Healthcare</option>
-                        <option value="finance">Finance</option>
-                        <option value="energy">Energy</option>
-                        <option value="consumer">Consumer Goods</option>
-                        <option value="industrial">Industrial</option>
-                        <option value="utilities">Utilities</option>
-                        <option value="materials">Materials</option>
-                    </select>
-                    
-                    <label class="form-label">Investment Style</label>
-                    <select class="form-select" id="styleSelect">
-                        <option value="growth">Growth</option>
-                        <option value="value">Value</option>
-                        <option value="momentum">Momentum</option>
-                        <option value="dividend">Dividend</option>
-                        <option value="balanced">Balanced</option>
-                    </select>
-                    
-                    <label class="form-label">Risk Level</label>
-                    <select class="form-select" id="riskSelect">
-                        <option value="low">Conservative</option>
-                        <option value="medium">Moderate</option>
-                        <option value="high">Aggressive</option>
-                    </select>
-                    
-                    <label class="form-label">Time Horizon</label>
-                    <select class="form-select" id="timeSelect">
-                        <option value="short">Short-term (1-3 months)</option>
-                        <option value="medium">Medium-term (3-12 months)</option>
-                        <option value="long">Long-term (1+ years)</option>
-                    </select>
-                    
-                    <button class="btn btn-ai" onclick="runStockPicker()" id="pickBtn">
-                        <i class="bi bi-magic"></i>
-                        Generate AI Recommendations
-                    </button>
-                    <button class="btn btn-outline-secondary ms-2" onclick="testAPI()">
-                        <i class="bi bi-gear"></i>
-                        Test API
-                    </button>
-                </div>
+                
                 
                 <div class="results-section">
                     <h4><i class="bi bi-trophy"></i> AI Recommendations</h4>
                     <div id="stockPickerResults">
-                        <div class="text-center text-muted" style="padding: 3rem 0;">
-                            <i class="bi bi-robot" style="font-size: 3rem; opacity: 0.3;"></i>
-                            <p style="margin-top: 1rem;">Configure your criteria and click "Generate AI Recommendations" to get started</p>
+                        <div class="loading-spinner" id="pickerLoading">
+                            <div class="spinner-border" role="status">
+                                <span class="visually-hidden">Analyzing...</span>
+                            </div>
+                            <p style="margin-top: 1rem;">Load AI recommendation history data...</p>
                         </div>
                     </div>
-                    <div class="loading-spinner" id="pickerLoading">
-                        <div class="spinner-border" role="status">
-                            <span class="visually-hidden">Analyzing...</span>
-                        </div>
-                        <p style="margin-top: 1rem;">AI is analyzing market data...</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- AI Stock Diagnosis -->
-        <div class="ai-tool-card">
-            <div class="tool-header">
-                <div class="tool-icon">
-                    <i class="bi bi-search"></i>
-                </div>
-                <div class="tool-title">
-                    <h3>AI Stock Diagnosis</h3>
-                    <p>Analyze your portfolio performance and get professional investment advice based on your holdings</p>
-                </div>
-            </div>
-            
-            <div class="tool-content">
-                <div class="input-section">
-                    <h4><i class="bi bi-input-cursor"></i> Portfolio Stock Analysis</h4>
                     
-                    <label class="form-label">Stock Symbol</label>
-                    <input type="text" class="form-control" id="stockSymbol" placeholder="Enter stock symbol (e.g., AAPL, TSLA)" style="text-transform: uppercase;">
-                    
-                    <label class="form-label">Purchase Price</label>
-                    <input type="number" class="form-control" id="purchasePrice" placeholder="Enter purchase price (e.g., 150.50)" step="0.01" min="0">
-                    
-                    <label class="form-label">Purchase Date</label>
-                    <input type="date" class="form-control" id="purchaseDate">
-                    
-                    <label class="form-label">Purchase Market</label>
-                    <select class="form-select" id="purchaseMarket">
-                        <option value="NASDAQ">NASDAQ</option>
-                        <option value="NYSE">NYSE (New York Stock Exchange)</option>
-                        <option value="AMEX">AMEX (American Stock Exchange)</option>
-                        <option value="OTC">OTC (Over-the-Counter)</option>
-                    </select>
-                    
-                    <label class="form-label">Analysis Type</label>
-                    <select class="form-select" id="analysisType">
-                        <option value="portfolio">Portfolio Analysis (Recommended)</option>
-                        <option value="comprehensive">Comprehensive Analysis</option>
-                        <option value="technical">Technical Analysis</option>
-                        <option value="fundamental">Fundamental Analysis</option>
-                        <option value="sentiment">Market Sentiment</option>
-                        <option value="risk">Risk Assessment</option>
-                    </select>
-                    
-                    <button class="btn btn-ai" onclick="runPortfolioDiagnosis()" id="diagnoseBtn">
-                        <i class="bi bi-activity"></i>
-                        Run AI Diagnosis
-                    </button>
-                </div>
-                
-                <div class="results-section">
-                    <h4><i class="bi bi-clipboard-data"></i> Diagnosis Report</h4>
-                    <div id="stockDiagnosisResults">
-                        <div class="text-center text-muted" style="padding: 3rem 0;">
-                            <i class="bi bi-search" style="font-size: 3rem; opacity: 0.3;"></i>
-                            <p style="margin-top: 1rem;">Enter a stock symbol and click "Run AI Diagnosis" to analyze</p>
-                        </div>
-                    </div>
-                    <div class="loading-spinner" id="diagnosisLoading">
-                        <div class="spinner-border" role="status">
-                            <span class="visually-hidden">Diagnosing...</span>
-                        </div>
-                        <p style="margin-top: 1rem;">AI is performing deep analysis...</p>
-                    </div>
                 </div>
             </div>
         </div>
@@ -697,63 +581,14 @@
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-        const results = document.getElementById('stockPickerResults');
-        results.innerHTML = localStorage.getItem("runStock");
-     
+       runStockPicker();
         // AI Stock Picker Function
         async function runStockPicker() {
-            var today = new Date().toISOString().slice(0, 10);
-            var likeKey = 'runStockPicker_' + today;
-            localStorage.removeItem(likeKey)
-            const btn = document.getElementById('pickBtn');
-            const results = document.getElementById('stockPickerResults');
-            const loading = document.getElementById('pickerLoading');
-            
-            // Show loading
-            btn.disabled = true;
-            results.style.display = 'none';
-            loading.style.display = 'block';
-            
-            const criteria = {
-                sector: document.getElementById('sectorSelect').value,
-                style: document.getElementById('styleSelect').value,
-                risk: document.getElementById('riskSelect').value,
-                timeHorizon: document.getElementById('timeSelect').value
-            };
-            
-            try {
-                const responselogin = await fetch('/api/checklogin', {
-                    method: 'GET',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    }
-                });
-                if(responselogin.ok)
-                {
-                   
-                    const data = await responselogin.json();
-                  
-                    if(!data.userlogin && data.success){
-                         if (localStorage.getItem(likeKey)) {
-                            alert('You have already used it once today. If you want to continue using it, please log in!');
-                              results.innerHTML = `
-                            <div class="alert alert-danger">
-                                <i class="bi bi-exclamation-triangle"></i>
-                                Error generating recommendations: You have already used it once today. If you want to continue using it, please log in!
-                                <a href="/viplogin">Login</a>
-                            </div>
-                        `;
-                            return;
-                        }
-                    }
-                }
 
-                const response = await fetch('/api/ai/stock-picker', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify(criteria)
+            try {
+              
+                const response = await fetch('/api/apihistory', {
+                    method: 'GET'
                 });
                 
                 if (!response.ok) {
@@ -784,7 +619,6 @@
                 loading.style.display = 'none';
                 results.style.display = 'block';
                 btn.disabled = false;
-                localStorage.setItem(likeKey, '1');
             }
         }
         
@@ -804,13 +638,14 @@
             }
             
             let html = '';
-            recommendations.forEach((stock, index) => {
+            recommendations.forEach((Item, index) => {
+                stock=Item.out_info;
                 const currentPrice = stock.current_price || 0;
                 const changePercent = stock.change_percent || 0;
                 const marketCap = stock.market_cap || 0;
                 const peRatio = stock.pe_ratio || 0;
                 const volumeRatio = stock.volume_ratio || 1;
-                
+                Ratio=((Item.currprice-currentPrice)/currentPrice)*100
                 // Format market cap
                 const formatMarketCap = (cap) => {
                     if (cap > 1e12) return `$${(cap / 1e12).toFixed(1)}T`;
@@ -826,7 +661,25 @@
                             <div class="stock-price-info">
                                 <span class="current-price">$${currentPrice.toFixed(2)}</span>
                                 <span class="price-change ${changePercent >= 0 ? 'positive' : 'negative'}">
-                                    ${changePercent >= 0 ? '+' : ''}${changePercent.toFixed(2)}%
+                                    Recommended price
+                                </span>
+                            </div>
+                             <div class="stock-price-info">
+                                <span class="current-price">$${Item.currprice}</span>
+                                <span class="price-change ${Ratio >= 0 ? 'positive' : 'negative'}"">
+                                    Current price
+                                </span>
+                            </div>
+                             <div class="stock-price-info">
+                                <span class="current-price">${Ratio.toFixed(2)}%</span>
+                                <span class="price-change ${Ratio >= 0 ? 'positive' : 'negative'}"">
+                                    P&L Ratio
+                                </span>
+                            </div>
+                             <div class="stock-price-info">
+                                <span class="current-price">${Item.put_time}</span>
+                                <span class="price-change negative">
+                                    Recommended date
                                 </span>
                             </div>
                         </div>
@@ -873,8 +726,6 @@
             });
             
             results.innerHTML = html;
-            localStorage.setItem(likeKey, html);
-            console.log("储存html")
         }
         
         // Portfolio AI Stock Diagnosis Function
